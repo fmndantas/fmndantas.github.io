@@ -5,6 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
+<meta name="author" content="Fernando Dantas">
 <title>Processamento digital de imagens com OpenCV</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -417,21 +418,1567 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
+<style>
+/* Pygments styles disabled. Pygments is not available. */
+</style>
 </head>
 <body class="article">
 <div id="header">
 <h1>Processamento digital de imagens com OpenCV</h1>
+<div class="details">
+<span id="author" class="author">Fernando Dantas</span><br>
+<span id="email" class="email"><a href="mailto:fernandodantas1996@gmail.com">fernandodantas1996@gmail.com</a></span><br>
+</div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
 <p>O objetivo dessa página é relatar os resultados obtidos com a utilização da
-biblioteca OpenCV para o processamento de imagens digitais.</p>
+biblioteca OpenCV na implementação de algoritmos que lidam com processamento digital de imagens.</p>
+</div>
+<div class="paragraph">
+<p>Assume-se que o leitor tenha certa bagagem com o tópico de processamento de imagens, de maneira que a teoria não será profundamente detalhada; outrossim, todos os programas serão apresentados com uma pequena contextualização teórica.</p>
+</div>
+<div class="paragraph">
+<p><strong>As implementações mostradas aqui foram testadas e executadas somente em ambiente de desenvolvimento Linux, mas devem funcionar em outros sistemas operacionais com devidas adaptações.</strong></p>
+</div>
+<div class="paragraph">
+<p>Após a correta instalação do OpenCV, salve o seguinte código como o arquivo <code>Makefile</code>. Você deverá usar esse arquivo no mesmo diretório que o arquivo <em>.cpp</em> a ser compilado.</p>
+</div>
+<div class="listingblock">
+<div class="title">Makefile</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash">.SUFFIXES:
+.SUFFIXES: .c .cpp
+
+CC = gcc
+GCC = g++
+
+.c:
+	$(CC) -I$(INCDIR) $(CFLAGS) $&lt; $(GL_LIBS) -o $@
+
+.cpp:
+	$(GCC) -Wall -Wunused -std=c++11 -O2 `pkg-config --cflags opencv` $&lt; -o $@ `pkg-config --libs opencv cairo`</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Para compilar os exemplos faça</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash">make listagem.cpp</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Se tudo correr como esperado, deve surgir um <code>.so</code> no diretório atual com mesmo nome do arquivo <code>.cpp</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_manipulação_de_pixels">1. Manipulação de pixels</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Normalmente, as imagens que são processadas digitalmente não têm seus pixels diretamente alterados, de modo que os pixels resultantes do processamento são copiados para uma nova imagem, com o intuito de manter-se a imagem original disponível para outros futuros processamentos.</p>
+</div>
+<div class="paragraph">
+<p>Ainda assim, algoritmos que atuam diretamente nos pixels da imagem fornecida podem realizar processamentos úteis, conforme será mostrado nos exemplos a seguir.</p>
+</div>
+<div class="sect2">
+<h3 id="_1_1_negativo_de_uma_região">1.1 Negativo de uma região</h3>
+<div class="paragraph">
+<p>O objetivo deste programa é criar uma janela  <em>negativa</em> numa imagem. A dimensão da janela é definida por dois pontos (quatro coordenadas) passados pelo usuário. A seguir, mostro a minha solução e explico a listagem <em>regions.cpp</em>.</p>
+</div>
+<div class="listingblock">
+<div class="title">regions.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+#include&lt;sstream&gt;
+
+using namespace cv;
+using namespace std;
+
+int* definir_pontos(int argc, char* argv[]){
+  stringstream ss;
+  int* pontos = new int[argc - 2];
+  for (int i = 2; i &lt; argc; i++) {
+    ss.clear();
+    ss.str(argv[i]);
+    ss &gt;&gt; pontos[i-2];
+  }
+  return pontos;
+}
+
+int main(int argc, char *argv[]){
+  Mat image;
+  image = imread(argv[1], CV_LOAD_IMAGE_COLOR);
+  if(!image.data)
+    cout &lt;&lt; "nao abriu a imagem corretamente";
+
+  int* pontos = definir_pontos(argc, argv);
+
+  namedWindow("regions", WINDOW_AUTOSIZE);
+  for(int i = pontos[0]; i &lt; pontos[2]; i++){
+    for(int j = pontos[1]; j &lt; pontos[3]; j++){
+      image.at&lt;uchar&gt;(i, j) = 255 - image.at&lt;uchar&gt;(i, j);
+    }
+  }
+
+  imshow("regions", image);
+  waitKey();
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Os parâmetros necessários para a execução do programa são passados via linha de comando, ex.: <code>./regions imagem x<sub>1</sub> y<sub>1</sub> x<sub>2</sub> y<sub>2</sub></code> em que</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>imagem</em> é o arquivo de imagem a ser processado e que deve estar no mesmo diretório de <em>regions.cpp</em></p>
+</li>
+<li>
+<p>x<sub>1</sub> e y<sub>1</sub> são as coordenadas vertical e horizontal do ponto <strong>superior esquerdo</strong> que delimita a janela negativa</p>
+</li>
+<li>
+<p>x<sub>2</sub> e y<sub>2</sub> são as coordenadas vertical e horizontal do ponto <strong>inferior direito</strong> que delimita a janela negativa</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A função <code>definir_pontos</code> é responsável por receber as coordenadas passadas pelo usuário via linha de comando e retornar um vetor contendo os pontos delimitantes da janela negativa. Esse vetor de pontos é criado em</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">int* pontos = definir_pontos(argc, argv);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A criação da janela negativa se dá por meio de um laço duplo que percorre os pixels da imagem fornecida, por meio da aplicação da transformação</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[T(r_k) = 255 - r_k\]
+</div>
+</div>
+<div class="paragraph">
+<p>em que \(r_k\) é o tom de cinza do pixel.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">for(int i = pontos[0]; i &lt; pontos[2]; i++){
+    for(int j = pontos[1]; j &lt; pontos[3]; j++){
+      image.at&lt;uchar&gt;(i, j) = 255 - image.at&lt;uchar&gt;(i, j);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>O código acima demonstra a transformação mencionada. Observe que cada pixel \((i,j)\) da imagem tem seu tom de cinza substituído por 255 menos o seu próprio tom de cinza. <code>image.at&lt;template&gt;(i, j)</code> é usada tanto para atribuir o novo valor ao pixel, quanto para acessar o valor do pixel.</p>
+</div>
+<div class="paragraph">
+<p>O resultado da utilização de <em>regions</em> pode ser visualizado nas duas figuras a seguir, em que a primeira é a figura original e a segunda, a mesma figura processada. Para criar o efeito de imagem negativa, usei</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash">./regions praia.jpg 50 50 250 250</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/praia.jpg" alt="praia">
+</div>
+<div class="title">Figure 1. Imagem original</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/regions_praia.png" alt="regions praia">
+</div>
+<div class="title">Figure 2. Resultado de regions</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_1_2_troca_dos_quadrantes_de_uma_imagem">1.2 Troca dos quadrantes de uma imagem</h3>
+<div class="paragraph">
+<p>O objetivo desse programa é simplesmente trocar os quadrantes de uma imagem qualquer.</p>
+</div>
+<div class="paragraph">
+<p>Para isso, a imagem é subdividida em quatro imagens menores, denominadas A, B, C e D, em que tal subdivisão ocorre da esquerda para direita e de cima pra baixo. Em outras palavras, A corresponde à subimagem do canto superior esquerdo e D, à do canto inferior direito. O programa faz a troca de A com D e de B com C.</p>
+</div>
+<div class="paragraph">
+<p>Isso pode ser usado, por exemplo, como ferramenta intermediária em outros algoritmos como o da transformada de Fourier de uma imagem. Abaixo está a implementação.</p>
+</div>
+<div class="listingblock">
+<div class="title">trocaregioes.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+#include &lt;sstream&gt;
+
+using namespace cv;
+using namespace std;
+
+Mat load_img(string dir){
+  Mat image;
+  image = imread(dir, CV_LOAD_IMAGE_COLOR);
+  return image;
+}
+
+Mat* swapped_quadrants(Mat source){
+  int height = source.rows;
+  int midx = height / 2;
+  int width = source.cols;
+  int midy = width / 2;
+  Mat* slices = new Mat[4];
+  Mat A = source.operator()(Range(midx, height), Range(midy, width));
+  Mat B = source.operator()(Range(midx, height), Range(0, midy));
+  Mat C = source.operator()(Range(0, midx), Range(midy, width));
+  Mat D = source.operator()(Range(0, midx), Range(0, midy));
+  slices[0] = A;
+  slices[1] = B;
+  slices[2] = C;
+  slices[3] = D;
+  return slices;
+}
+
+Mat swapped_img(Mat source){
+  Mat H1, H2, V;
+  Mat* slices = swapped_quadrants(source);
+  hconcat(slices[0], slices[1], H1);
+  hconcat(slices[2], slices[3], H2);
+  vconcat(H1, H2, V);
+  return V;
+};
+
+int main(int argc, char *argv[]){
+  Mat image = load_img("praia.png");
+  Mat swapped = swapped_img(image);
+
+  if (image.rows != swapped.rows || image.cols != swapped.cols){
+    cout &lt;&lt; "erro nas dimensões das imagens" &lt;&lt; endl;
+    return -1;
+  }
+
+  namedWindow("swap", WINDOW_AUTOSIZE);
+
+  imshow("swap", swapped);
+  waitKey();
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A função <code>swapped_quadrants</code> é a responsável por retornar um vetor com quatro objetos <code>Mat</code>, em que cada objeto é um dos quatro quadrantes da imagem. A extração das subimagens é feito com o método <code>operator</code>, que recebe como parâmetros dois objetos <code>Range</code>, em que o primeiro representa a região vertical e o segundo, a região horizontal do retângulo de extração.</p>
+</div>
+<div class="paragraph">
+<p>A função <code>swapped_img</code> recebe a imagem original e, utilizando os quadrantes retornados de <code>swapped_quadrants</code>, cria uma imagem que é a concatenação dos quadrantes trocados, usando as funções de concatenação <code>hconcat</code> e <code>vconcat</code>.</p>
+</div>
+<div class="paragraph">
+<p>A utilização do programa foi feita com</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash">./trocaregioes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ainda com a imagem <em>praia.jpg</em>.</p>
+</div>
+<div class="paragraph">
+<p>A imagem processada resultante foi</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/trocaregioes_praia.png" alt="trocaregioes praia">
+</div>
+<div class="title">Figure 3. Imagem com quadrantes trocados</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_rotulação_de_regiões">2. Rotulação de regiões</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_2_1_contagem_de_bolhas_com_buracos">2.1 Contagem de bolhas com buracos</h3>
+<div class="paragraph">
+<p>O objetivo desse algoritmo é a contagem de bolhas de cor preta, numa imagem binária com fundo branco. O <em>plus</em> é que o programa é capaz, também, de contar a quantidades de bolhas com buracos.</p>
+</div>
+<div class="paragraph">
+<p>Abaixo, a implementação, posteriormente explicada.</p>
+</div>
+<div class="listingblock">
+<div class="title">labeling.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+#include &lt;sstream&gt;
+
+#define BRANCO 255
+#define PRETO 0
+
+using namespace cv;
+using namespace std;
+
+Mat load_img(string dir){
+  Mat image;
+  image = imread(dir, CV_LOAD_IMAGE_GRAYSCALE);
+  return image;
+}
+
+bool pixel_eh_cinza(Mat image, int i, int j){
+  return image.at&lt;uchar&gt;(i, j) &gt; PRETO &amp;&amp; image.at&lt;uchar&gt;(i, j) &lt; BRANCO;
+}
+
+Mat colorir_background(Mat image){
+  CvPoint p;
+  p.x = 0;
+  p.y = 0;
+  floodFill(image, p, BRANCO);
+  return image;
+}
+
+Mat remover_bolhas_das_bordas(Mat image){
+  CvPoint p;
+
+  for (int j = 0; j &lt; image.cols; j++) {
+    p.x = j;
+    p.y = 0;
+    floodFill(image, p, PRETO);
+  }
+
+  for (int j = 0; j &lt; image.cols; j++) {
+    p.x = j;
+    p.y = image.rows - 1;
+    floodFill(image, p, PRETO);
+  }
+
+  for (int i = 0; i &lt; image.rows; i++) {
+    p.x = 0;
+    p.y = i;
+    floodFill(image, p, PRETO);
+  }
+
+  for (int i = 0; i &lt; image.rows; i++) {
+    p.x = image.cols - 1;
+    p.y = i;
+    floodFill(image, p, PRETO);
+  }
+  return image;
+}
+
+Mat labeling(Mat image, int* objs){
+  CvPoint p;
+  for (int i = 0; i &lt; image.rows; i++) {
+    for (int j = 0; j &lt; image.cols; j++) {
+      if(image.at&lt;uchar&gt;(i, j) == BRANCO){
+        *objs += 1;
+        p.x = j;
+        p.y = i;
+        floodFill(image, p, *objs);
+      }
+    }
+  }
+  return image;
+}
+
+Mat contar_buracos(Mat image, int* objs_esburacados){
+  CvPoint p;
+  for (int i = 0; i &lt; image.rows; i++) {
+    for (int j = 0; j &lt; image.cols; j++) {
+      p.x = j;
+      p.y = i;
+      if(image.at&lt;uchar&gt;(i, j) == PRETO){
+        if(pixel_eh_cinza(image, i, j - 1)){
+          floodFill(image, p, BRANCO);
+          p.x--;
+          floodFill(image, p, BRANCO);
+          *objs_esburacados += 1;
+        }else{
+          floodFill(image, p, BRANCO);
+        }
+      }
+    }
+  }
+  return image;
+}
+
+int main(int argc, char *argv[]){
+
+  Mat image = load_img("bolhas.png");
+
+  int objs = 0;
+  int objs_esburacados = 0;
+
+  namedWindow("labeling", WINDOW_AUTOSIZE);
+
+  imshow("labeling", image);
+  waitKey();
+
+  image = remover_bolhas_das_bordas(image);
+
+  imshow("labeling", image);
+  waitKey();
+
+  image = labeling(image, &amp;objs);
+
+  imshow("labeling", image);
+  waitKey();
+
+  image = colorir_background(image);
+
+  imshow("labeling", image);
+  waitKey();
+
+  image = contar_buracos(image, &amp;objs_esburacados);
+
+  cout &lt;&lt; "Quantidade de objetos: " &lt;&lt; objs &lt;&lt; endl;
+  cout &lt;&lt; "Quantidade de objetos esburacados: " &lt;&lt; objs_esburacados &lt;&lt; endl;
+
+  imshow("labeling", image);
+  waitKey();
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A imagem utilizada com o algoritmo foi a seguinte:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/labeling_original.png" alt="labeling original">
+</div>
+<div class="title">Figure 4. Imagem original</div>
+</div>
+<div class="paragraph">
+<p>A função <code>remover_bolhas_das_bordas</code> é o primeiro passo na execução do programa. Essa função percorre as bordas da imagem simplesmente executando o <a href="https://en.wikipedia.org/wiki/Flood_fill">floodFill</a> em todos os pixels pretos encontrados. Esse passo é necessário porque não se pode assumir que as bolhas nas bordas tenham buracos ou não. A imagem abaixo mostra a figura sem as bolhas das bordas.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/labeling_sem_bordas.png" alt="labeling sem bordas">
+</div>
+<div class="title">Figure 5. Imagem sem bolhas das bordas</div>
+</div>
+<div class="paragraph">
+<p>O próximo passo é realizar o processo de rotulação e contagem das bolhas que permaneceram na imagem, o que é feito pela função <code>labeling</code>. O parâmetro <code>&amp;objs</code> que é passado na chamada dessa função é a quantidade total de objetos, inicializada em zero. <code>labeling</code> percorre a imagem procurando pixels brancos, de modo que, quando os acha, incrementa <code>objs</code> e faz <code>floodFill</code> no pixel atual com o valor de <code>objs</code>, que é justamente a quantidade de objetos até então encontrados, e, portanto, o rótulo utilizado. O <code>floodFill</code> garante que todos os pixels vizinhos ao pixel branco recentemente encontrado deixem de ser brancos, de modo que a região não será contabilizada novamente. Observe na figura abaixo o resultado da função <code>labeling</code>: de cima pra baixo, nota-se que as bordas vão ficando mais claras; isso é porque o valor de <code>objs</code>, que é incrementado toda vez que se acha uma nova região branca, é usado, como já explicado, para rotular a região encontrada.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/labeling_labeling.png" alt="labeling labeling">
+</div>
+<div class="title">Figure 6. Imagem rotulada</div>
+</div>
+<div class="paragraph">
+<p>Agora que as regiões das bordas estão rotuladas, faz-se <code>floodFill</code> no fundo da cena com o tom 255 (branco). Como as bolhas nas bordas foram removidas, é seguro usar o pixel \({0, 0}\) como semente. A imagem resultante é a seguinte:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/labeling_fundo_branco.png" alt="labeling fundo branco">
+</div>
+<div class="title">Figure 7. Imagem com rotulada com fundo branco</div>
+</div>
+<div class="paragraph">
+<p>Finalmente, a última etapa do algoritmo é a aplicação da função <code>contar_buracos</code>. O parâmetro <code>&amp;objs_esburacados</code> desempenha o mesmo papel que o parâmetro <code>&amp;objs</code> passado na função <code>labeling</code>. A função <code>contar_buracos</code> percorre a imagem procurando por pixels pretos; veja que, na imagem processada até o momento, os pixels pretos só podem representar o interior de um objeto, pois todas as bordas estão pintadas com tom de cinza diferente de 0 (preto). Assim, quando um pixel preto é encontrado, se o seu vizinho da esquerda é cinza, trata-se de uma bolha com buraco; incrementa-se, portanto, <code>&amp;objs_esburacados</code> e faz-se <code>floodFill</code> com o pixel atual (preto) e seu vizinho esquerdo (cinza) usando o tom 255. Em contrapartida, se um pixel preto é encontrado e seu vizinho esquerdo não é cinza, trata-se de um objeto que já foi contabilizado e que tinha mais de um buraco; nesse caso, faz-se somente <code>floodfill</code> nesse pixel sem incrementar-se <code>objs_esburacados</code>.</p>
+</div>
+<div class="paragraph">
+<p>Na cena sobram somente os objetos sem buracos e rotulados como mostrado aqui:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/labeling_final.png" alt="labeling final">
+</div>
+<div class="title">Figure 8. Imagem final</div>
+</div>
+<div class="paragraph">
+<p>O resultado da contabilização dos objetos é mostrado no <em>prompt</em>:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/labeling_console.png" alt="labeling console">
+</div>
+<div class="title">Figure 9. Resultado da contabilização</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_manipulação_de_histogramas">3. Manipulação de histogramas</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_3_1_equalização_de_imagem">3.1 Equalização de imagem</h3>
+<div class="paragraph">
+<p>O algoritmo apresentado aqui realiza a equalização do histograma de uma imagem.</p>
+</div>
+<div class="paragraph">
+<p>O histograma é uma função que mapeia um tom de cinza na quantidade de pixels presentes na imagem com esse tom de cinza. A equalização de histograma, falando sumariamente, redistribui os tons de cinza da imagem entre tons de cinza de um <em>range</em> pré-determinado. Outros detalhes serão apresentados durante a explicação da implementação, mostrada a seguir (foi assumido o processamento em tempo real e as imagens capturas em tom de cinza):</p>
+</div>
+<div class="listingblock">
+<div class="title">equalize.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code>#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+using namespace cv;
+using namespace std;
+
+int main(int argc, char** argv){
+
+  VideoCapture cap;
+  int height, width;
+  int histSize = 256;
+  float range[] = {0, histSize};
+  const float* histRange = {range};
+  Mat image, copy;
+  Mat histogram, histogram_copy;
+  bool uniform = true, accumulate = false;
+  int histdisplay_width = 128, histdisplay_height = 68;
+
+  cap.open(0);
+
+  if(!cap.isOpened()){
+    cout &lt;&lt; "cameras indisponiveis";
+    return -1;
+  }
+
+  width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+  height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+  cout &lt;&lt; "largura = " &lt;&lt; width &lt;&lt; endl;
+  cout &lt;&lt; "altura  = " &lt;&lt; height &lt;&lt; endl;
+
+  while(1){
+    cap &gt;&gt; image;
+    cvtColor(image, image, CV_BGR2GRAY);
+
+    copy = image.clone();
+
+    Mat histImage(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0));
+    Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0));
+
+    calcHist(&amp;image, 1, 0, Mat(), histogram, 1, &amp;histSize, &amp;histRange, uniform, accumulate);
+    histogram_copy = histogram.clone();
+    normalize(histogram_copy, histogram_copy, 0, histImage.rows, NORM_MINMAX, -1, Mat());
+
+    equalizeHist(image, image);
+
+    calcHist(&amp;image, 1, 0, Mat(), histogram, 1, &amp;histSize, &amp;histRange, uniform, accumulate);
+    normalize(histogram, histogram, 0, histImage.rows, NORM_MINMAX, -1, Mat());
+
+    for(int i=0; i&lt;histSize; i++){
+      line(
+        histImage,
+        Point(i, histdisplay_height),
+        Point(i, histdisplay_height - cvRound(histogram.at&lt;float&gt;(i))),
+        Scalar(255, 255, 255), 1, 8, 0
+      );
+      line(
+        histImageCopy,
+        Point(i, histdisplay_height),
+        Point(i, histdisplay_height - cvRound(histogram_copy.at&lt;float&gt;(i))),
+        Scalar(255, 255, 255), 1, 8, 0
+      );
+    }
+
+    histImage.copyTo(image(Rect(0, 0, histImage.cols, histImage.rows)));
+    histImageCopy.copyTo(copy(Rect(0, 0, histImage.cols, histImage.rows)));
+
+    imshow("equalizada", image);
+    imshow("nao-equalizada", copy);
+
+    if(waitKey(1) == 27) break;
+  }
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>cap</code> é um objeto <code>VideoCapture</code> da biblioteca OpenCV para lidar com a captura de vídeo. Neste programa, optou-se por utilizar a câmera embutida do computador, com <code>cap.open(0)</code>. O loop <code>while</code> mantém o programa capturando continuamente os frames e realizando os processamento que serão detalhados ao decorrer da explicação. Esse tipo de uso do <code>while</code> será usado a partir de agora em algumas implementações posteriores.</p>
+</div>
+<div class="paragraph">
+<p>Continuando, a linha <code>cvtColor(image, image, CV_BGR2GRAY);</code> converte a imagem colorida capturada do objeto <code>cap</code> em uma imagem somente com tons de cinza. Cria-se uma cópia de imagem no estado atual, com <code>copy = image.clone()</code>, que será mostrada como um comparativo com a imagem processada pela equalização.</p>
+</div>
+<div class="paragraph">
+<p>Os histogramas são objetos <code>Mat</code> do próprio OpenCV, sendo declarados em</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code>Mat histImage(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0));
+Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>O cálculo do histograma da imagem não-processada é feito em:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code>calcHist(&amp;image, 1, 0, Mat(), histogram, 1, &amp;histSize, &amp;histRange, uniform, accumulate);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>histogram_copy</code>, posteriormente, receberá o histograma da imagem equalizada.</p>
+</div>
+<div class="paragraph">
+<p>A linha <code>normalize(histogram_copy, histogram_copy, 0, histImage.rows, NORM_MINMAX, -1, Mat());</code> normaliza <code>histogram_copy</code> no intervalo 0 à quantidade de linhas de <code>histImage</code>, que é onde o objeto que armazenará a representação do histograma.</p>
+</div>
+<div class="paragraph">
+<p><code>equalizeHist(image, image);</code> realiza a equalização do histograma de <code>image</code>. Agora, <code>histogram</code> recebe o histograma normalizado de <code>image</code>, conforme mostrado em</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">calcHist(&amp;image, 1, 0, Mat(), histogram, 1, &amp;histSize, &amp;histRange, uniform, accumulate);
+normalize(histogram, histogram, 0, histImage.rows, NORM_MINMAX, -1, Mat());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>O desenho do histograma é realizado pelas linhas</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">for(int i=0; i&lt;histSize; i++){
+  line(
+    histImage,
+    Point(i, histdisplay_height),
+    Point(i, histdisplay_height - cvRound(histogram.at&lt;float&gt;(i))),
+    Scalar(255, 255, 255), 1, 8, 0
+  );
+  line(
+    histImageCopy,
+    Point(i, histdisplay_height),
+    Point(i, histdisplay_height - cvRound(histogram_copy.at&lt;float&gt;(i))),
+    Scalar(255, 255, 255), 1, 8, 0
+  );
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Observe que, apesar da imagem ser composta apenas por tons de cinza, é necessário passar três valores para <code>Scalar()</code>, pois o histograma é desenhado colorido. <code>Scalar(255, 255, 255)</code> representa, portanto, o tom de cinza branco.</p>
+</div>
+<div class="paragraph">
+<p>Em</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">histImage.copyTo(image(Rect(0, 0, histImage.cols, histImage.rows)));
+histImageCopy.copyTo(copy(Rect(0, 0, histImage.cols, histImage.rows)));
+
+imshow("equalizada", image);
+imshow("nao-equalizada", copy);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>os desenhos dos histogramas são copiados para as imagens, que são mostradas em tempo real.</p>
+</div>
+<div class="paragraph">
+<p>Como exemplo da aplicação do programa, observe imagens abaixo:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/neq.png" alt="neq">
+</div>
+<div class="title">Figure 10. Imagem do ambiente não equalizada</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/eq.png" alt="eq">
+</div>
+<div class="title">Figure 11. Imagem do ambiente após equalização</div>
+</div>
+<div class="paragraph">
+<p>A imagem equalizada apresenta diferenças de constraste um pouco mais acentuadas que a imagem não-equalizada. Isso ocorre porque o processo de equalização "espalha" os tons de cinza mais frequentes na imagem original no histograma da imagem equalizada. Essas diferenças de contraste podem ser melhor observadas nas seguintes imagens, mais escuras que aquelas primeiras:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/neq2.png" alt="neq2">
+</div>
+<div class="title">Figure 12. Imagem de uma quina</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/eq2.png" alt="eq2">
+</div>
+<div class="title">Figure 13. Imagem anterior equalizada</div>
+</div>
+<div class="paragraph">
+<p>Observe o histograma mostrado na Figura 12: tal histograma mostra que os tons de cinza mais recorrentes foram os tons próximos ao branco. Agora, veja que o histograma mostrado na Figura 13 denota que os tons mais próximos ao branco da Figura 12 foram distribuídos pelo histograma da imagem equalizada, o que, de fato, resultou no aumento do contraste geral da imagem.</p>
+</div>
+<div class="paragraph">
+<p>O caso demonstrado pelas Figuras 12 e 13 são os de maior interesse do processo de equalização: cena com tons de cinza relativamente próximos. A equalização, por aumentar o contraste, faz com que os tons da nova imagem tornem-se mais esparsos, evidenciando melhor as características da imagem adquirida.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_2_detecção_de_movimento">3.2 Detecção de movimento</h3>
+<div class="paragraph">
+<p>O programa de detetecção de movimento funciona, basicamente, comparando o histograma do frame atual com o histograma armazenado do frame imediatamente passado. A implementação é mostrada a seguir:</p>
+</div>
+<div class="listingblock">
+<div class="title">motiondetector.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+using namespace cv;
+using namespace std;
+
+bool houve_movimento(Mat hist, Mat cp_hist, float maxima_diferenca=10, float threshold=7){
+  if ((hist.rows != cp_hist.rows) || (hist.cols != cp_hist.cols)){
+    return -1;
+  }
+  int mudancas = 0;
+  for(int i=0; i&lt;hist.rows; i++){
+    if ((hist.at&lt;float&gt;(i) - cp_hist.at&lt;float&gt;(i)) &gt; maxima_diferenca){
+      mudancas++;
+    }
+  }
+  if (mudancas &gt; threshold){
+    return true;
+  }
+  return false;
+}
+
+int main(int argc, char** argv){
+  Mat image;
+  int width, height;
+  VideoCapture cap;
+  vector&lt;Mat&gt; planes;
+  Mat hist, cp_hist;
+  int nbins = 64;
+  float range[] = {0, 256};
+  const float *histrange = { range };
+  bool uniform = true;
+  bool acummulate = false;
+  Mat hsvImg;
+  string text_status;
+
+  cap.open(0);
+
+  if(!cap.isOpened()){
+    cout &lt;&lt; "cameras indisponiveis";
+    return -1;
+  }
+
+  width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+  height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+  while(1){
+    cap &gt;&gt; image;
+    split (image, planes);
+
+    calcHist(&amp;planes[0], 1, 0, Mat(), hist, 1, &amp;nbins, &amp;histrange, uniform, acummulate);
+
+    normalize(hist, hist, 0, 256, NORM_MINMAX, -1, Mat());
+
+    if (houve_movimento(hist, cp_hist)){
+      text_status = "movimento detectado";
+    }else{
+      text_status = "";
+    }
+
+    cp_hist = hist.clone();
+
+    putText(image, text_status, Point2f(100, 480), FONT_HERSHEY_PLAIN, 2,  Scalar(0, 0, 255), 2, 8, false);
+    imshow("image", image);
+    if(waitKey(1) == 27) break;
+  }
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>O <em>core</em> de <em>motiondetector.cpp</em> é, obviamente, a função <code>houve_movimento</code>. Os parâmetros dessa função são</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hist</code>: histograma do frame atual</p>
+</li>
+<li>
+<p><code>cp_hist</code>: histograma copiado do frame passado, usado na comparação com o histograma do frame atual</p>
+</li>
+<li>
+<p><code>maxima_diferenca</code>: limiar para que a frequência de uma escala de cinza em <code>hist</code> ser considerada diferente da frequencia da mesma escala de cinza em <code>cp_hist</code></p>
+</li>
+<li>
+<p><code>threshold</code>: limiar da quantidade de frequências diferentes para que seja estabelecido que houve movimento</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note que os parâmetros de <code>houve_movimento</code> devem ser calibrados por meio de experimentação com o equipamento disponível pelo usuário. Por exemplo: se a câmera adicionar muito ruído à imagem, é interessante que se aumente o parâmetro <code>threshold</code>, o que tornará o alarme menos sensível ao ruído.</p>
+</div>
+<div class="paragraph">
+<p>A linha</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">calcHist(&amp;planes[0], 1, 0, Mat(), hist, 1, &amp;nbins, &amp;histrange, uniform, acummulate);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>armazena o histograma de <code>planes[0]</code> em <code>hist</code>, em que <code>planes[0]</code> é a componente azul de <code>image</code>. A quantidade de diferenças no histograma, portanto, é feita somente para <code>planes[0]</code>.</p>
+</div>
+<div class="paragraph">
+<p>O alarme para a existência de movimento é simplesmente um texto na tela, cujo conteúdo é determinado por:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">if (houve_movimento(hist, cp_hist)){
+  text_status = "movimento detectado";
+}else{
+  text_status = "";
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>cp_hist = hist.clone()</code> atualiza <code>cp_hist</code>, que será utilizado para as comparações com o próximo frame a ser adquirido.</p>
+</div>
+<div class="paragraph">
+<p>Por fim, a linha</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">putText(image, text_status, Point2f(100, 480), FONT_HERSHEY_PLAIN, 2,  Scalar(0, 0, 255), 2, 8, false);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>coloca o <code>text_status</code> na tela. Se não for detectado movimento, <code>text_status = ""</code>, o que se traduz simplesmente na ausência do alarme.</p>
+</div>
+<div class="paragraph">
+<p>As duas imagens seguintes mostram o programa funcionando:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/motiondetector_sem.png" alt="motiondetector sem">
+</div>
+<div class="title">Figure 14. Cena sem movimento</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/motiondetector_com.png" alt="motiondetector com">
+</div>
+<div class="title">Figure 15. Cena com movimento</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_filtragem_no_domínio_espacial_parte_1">4. Filtragem no domínio espacial, parte 1</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Realizar uma filtragem no domínio espacial significa aplicar transformações nos pixels de uma imagem com base em um <em>kernel</em> e copiar o resultado das transformações para uma outra imagem. O <em>kernel</em>, ou máscara, é uma matriz de dimensões \(n\times n\), com \(n\) preferencialmente ímpar e menor que as dimensões da imagem sendo tratada. Os coeficientes do <em>kernel</em> determinam o tipo de operação que a filtragem realiza na imagem.</p>
+</div>
+<div class="paragraph">
+<p>Pode-se usar filtragem no domínio espacial, por exemplo, para detectar bordas na imagem, atenuar algumas espécies de ruído, dentre um vasto universo de outras aplicações.</p>
+</div>
+<div class="paragraph">
+<p>A idéia da filtragem espacial é bastante simples e sua implementação é computacionalmente barata: centra-se o <em>kernel</em> em algum dos pixels da imagem, de modo que o valor desse pixel, após o processamento, será o resultado do somatório do produto dos coeficientes da máscara pelo tom de cinza alinhado com a posição de cada um dos coeficientes:</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="./imgs/spatial.jpg" alt="spatial"></span></p>
+</div>
+<div class="sect2">
+<h3 id="_4_1_filtro_laplaciano_do_gaussiano">4.1 Filtro laplaciano do gaussiano</h3>
+<div class="paragraph">
+<p>A listagem <em>laplgauss.cpp</em> apresenta uma interface para experimentação em tempo real de alguns dos filtros mais comuns para o processamento de imagens: média, gaussiano, sobel vertical, sobel horizontal, laplaciano e laplaciano do gaussiano.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Média: cada pixel recebe o valor da média dele mesmo e dos pixels vizinhos. Resulta numa imagem com transições mais suaves.</p>
+</li>
+<li>
+<p>Gaussiano: reduz o ruído e elimina detalhes finos da imagem. É um filtro suavizante.</p>
+</li>
+<li>
+<p>Sobel vertical: detecta transições verticais na imagem. É um filtro aguçador.</p>
+</li>
+<li>
+<p>Sobel horizontal: também é um filtro aguçador, mas detecta transições horizontais.</p>
+</li>
+<li>
+<p>Laplaciano: detecta as bordas da imagem. O resultado da filtragem com o laplaciano é comumente somado com a imagem original, de modo que a a imagem final é a imagem original com as bordas mais nítidas. O filtro laplaciano, por ser proveninente de uma derivação de segunda ordem, é muito sensível a ruídos.</p>
+</li>
+<li>
+<p>Laplaciano do gaussiano: busca reduzir os efeitos da sensibilidade ao ruído do filtro laplaciano, por meio da aplicação prévia do filtro gaussiano.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A listagem <em>laplgauss.cpp</em> mostra a aplicação para visualização dos filtros em tempo real.</p>
+</div>
+<div class="listingblock">
+<div class="title">laplgauss.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+using namespace cv;
+using namespace std;
+
+void printmask(Mat m){
+  cout &lt;&lt; "\n";
+  for(int i=0; i&lt;m.rows; i++){
+    for(int j=0; j&lt;m.cols; j++){
+      cout &lt;&lt; m.at&lt;float&gt;(i,j) &lt;&lt; ",";
+    }
+    cout &lt;&lt; endl;
+  }
+}
+
+Mat make_mask(float vec[], int size, bool average=false, float factor=1.0){
+  Mat tmp = Mat(size, size, CV_32F, vec);
+  if(average){
+    Mat aux;
+    scaleAdd(tmp, 1/factor, Mat::zeros(3, 3, CV_32F), aux);
+    swap(aux, tmp);
+  }
+  return tmp;
+}
+
+void menu(){
+  system("clear");
+  cout &lt;&lt;
+  "\na - Calcular modulo\n"
+  "m - Media\n"
+  "g - Gauss\n"
+  "v - Vertical\n"
+  "h - Horizontal\n"
+  "l - Laplaciano\n"
+  "d - Laplaciano do gaussiano\n"
+	"esc - Sair\n";
+}
+
+int main(int argvc, char** argv){
+
+  VideoCapture video;
+
+  float media[] = {
+  	1, 1, 1,
+  	1, 1, 1,
+  	1, 1, 1
+  };
+
+  float gauss[] = {
+	1, 2, 1,
+	2, 4, 2,
+	1, 2, 1
+  };
+
+  float horizontal[]={
+	-1, 0, 1,
+	-2, 0, 2,
+	-1, 0, 1
+  };
+
+  float vertical[]={
+	-1, -2, -1,
+	 0,  0,  0,
+	 1,  2,  1
+  };
+
+  float laplacian[]={
+	0, -1,  0,
+	-1,  4, -1,
+	0, -1,  0
+  };
+
+  Mat cap, frame, frame32f, frameFiltered;
+  Mat mask(3, 3, CV_32F);
+  Mat result, result1;
+  double width, height, min, max;
+  int absolut;
+  char key;
+
+  video.open(0);
+  if(!video.isOpened())
+    return -1;
+  width = video.get(CV_CAP_PROP_FRAME_WIDTH);
+  height = video.get(CV_CAP_PROP_FRAME_HEIGHT);
+  std::cout &lt;&lt; "largura = " &lt;&lt; width &lt;&lt; "\n" &lt;&lt; endl;
+  std::cout &lt;&lt; "altura = " &lt;&lt; height &lt;&lt; "\n" &lt;&lt; endl;
+
+  mask = make_mask(media, 3, true, 9.0);
+
+  absolut = 1;
+
+  menu();
+
+  while(1){
+    video &gt;&gt; cap;
+    cvtColor(cap, frame, CV_BGR2GRAY);
+    flip(frame, frame, 1);
+    imshow("original", frame);
+
+    frame.convertTo(frame32f, CV_32F);
+
+    if(key != 'd'){
+      filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
+    }else{
+      mask = make_mask(gauss, 3, true, 16.0);
+      filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
+      mask = make_mask(laplacian, 3);
+      filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
+    }
+
+    if(absolut){
+      frameFiltered=abs(frameFiltered);
+    }
+
+    frameFiltered.convertTo(result, CV_8U);
+
+    imshow("filtroespacial", result);
+
+    key = (char) waitKey(10);
+
+    if(key == 27) break;
+
+    switch(key){
+      case 'a':
+        menu();
+        cout &lt;&lt; "\nOpcao: modulo " &lt;&lt; absolut &lt;&lt; "\n";
+        absolut = !absolut;
+        break;
+      case 'm':
+  	    menu();
+        cout &lt;&lt; "\nOpcao: media\n";
+        mask = make_mask(media, 3, true, 9.0);
+        printmask(mask);
+        break;
+      case 'g':
+        menu();
+        cout &lt;&lt; "\nOpcao: gauss\n";
+        mask = make_mask(gauss, 3, true, 16.0);
+        printmask(mask);
+        break;
+      case 'h':
+        menu();
+        cout &lt;&lt; "\nOpcao: horizontal\n";
+        mask = make_mask(horizontal, 3);
+        printmask(mask);
+        break;
+      case 'v':
+        menu();
+        cout &lt;&lt; "\nOpcao: vertical\n";
+        mask = make_mask(vertical, 3);
+        printmask(mask);
+        break;
+      case 'l':
+        menu();
+        cout &lt;&lt; "\nOpcao: laplaciano\n";
+        mask = make_mask(laplacian, 3);
+        printmask(mask);
+        break;
+      case 'd':
+        menu();
+        cout &lt;&lt; "\nOpcao: laplaciano do gaussiano\n";
+        break;
+      default:
+        break;
+    }
+  }
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>O programa é executado com <code>./laplgauss</code>.</p>
+</div>
+<div class="paragraph">
+<p>Duas janelas se abrirão, uma com a imagem original e outra com a imagem processada. Um menu é continuamente mostrado no <em>prompt</em>, que exibirá uma lista de teclas que, ao serem pressionadas, fazem com que a imagem original seja filtrada com o correspondente filtro à tecla.</p>
+</div>
+<div class="paragraph">
+<p>As máscaras são declaradas nas linhas a seguir como vetores do tipo <code>float</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">float media[] = {
+  	1, 1, 1,
+  	1, 1, 1,
+  	1, 1, 1
+};
+
+float gauss[] = {
+	1, 2, 1,
+	2, 4, 2,
+	1, 2, 1
+};
+
+float horizontal[]={
+	-1, 0, 1,
+	-2, 0, 2,
+	-1, 0, 1
+};
+
+float vertical[]={
+	-1, -2, -1,
+ 	0,  0,  0,
+ 	1,  2,  1
+};
+
+float laplacian[]={
+	0, -1,  0,
+	-1,  4, -1,
+	0, -1,  0
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Essas máscaras são passadas como o parâmetro <code>vec</code> à função <code>make_mask</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">Mat make_mask(float vec[], int size, bool average=false, float factor=1.0){...</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>size</code>: dimensão \(n\) da máscara</p>
+</li>
+<li>
+<p><code>average</code>: se verdadeiro, faz com que os elementos da máscara sejam divididos pelo parâmetro <code>factor</code></p>
+</li>
+<li>
+<p><code>factor</code>: fator de divisão para os elementos da máscara</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A instrução <code>frame.convertTo(frame32f, CV_32F);</code> converte o frame atual para forma <code>CV_32F</code>. Essa conversão é necessária para o correto funcionamento da função <code>filter2D</code>, nativa do OpenCV.</p>
+</div>
+<div class="paragraph">
+<p>A filtragem espacial está implementada em</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">if(key != 'd'){
+  filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
+}else{
+  mask = make_mask(gauss, 3, true, 16.0);
+  filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
+  mask = make_mask(laplacian, 3);
+  filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(1,1), 0);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A função <code>filter2D</code> funciona com os seguintes parâmetros</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>frame32f</code>: frame convertido para o tipo de dado <code>CV_32F</code></p>
+</li>
+<li>
+<p><code>frameFiltered</code>: <code>frame32f</code> após o processo de filtragem</p>
+</li>
+<li>
+<p><code>frame32.depth()</code>: determina a profundidade desejada para <code>frameFiltered</code></p>
+</li>
+<li>
+<p><code>mask</code> é a máscara utilizada para filtragem</p>
+</li>
+<li>
+<p><code>Point(1,1)</code> indica que o elemento central de <code>mask</code> será o pivot de alinhamento com os pixels de <code>fram32f</code></p>
+</li>
+<li>
+<p>0 significa que os pixels não recebem acréscimo quando são armazenados em <code>frameFiltered</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>key</code> é uma variável do tipo <code>char</code>, que armazena a última tecla pressionada pelo usuário. A tecla <code>d</code> equivale à aplicação do filtro laplaciano do gaussiano, que foi implementado com a aplicação do filtro gaussiano seguida da aplicação do filtro laplaciano; isso está contido dentro do bloco <code>else</code> acima. Os demais valores que podem ser assumidos por <code>key</code> executam a suite dentro de <code>if(key != 'd')</code>.</p>
+</div>
+<div class="paragraph">
+<p>A linha <code>frameFiltered.convertTo(result, CV_8U);</code> converte o frame filtrado para o formato <code>CV_8U</code>, necessário para a exibição na tela.</p>
+</div>
+<div class="paragraph">
+<p>À exceção de quando <code>k = 'd'</code>, os blocos <code>switch-case</code> simplesmente armazenam a última tecla pressionada na variável <code>key</code> e criam a nova máscara que vai ser usado na filtragem dos frames a serem adquiridos (quando <code>key = 'd'</code>, a máscara é criada no bloco <code>else</code> que implementa a filtragem da imagem).</p>
+</div>
+<div class="paragraph">
+<p>Um exemplo do funcionamento do programa é mostrado abaixo:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/laplgauss_inicial.png" alt="laplgauss inicial">
+</div>
+<div class="title">Figure 16. Tela inicial. Por default, o filtro média é aplicado à imagem</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/laplgauss_laplaciano.png" alt="laplgauss laplaciano">
+</div>
+<div class="title">Figure 17. Filtro laplaciano para detecção de bordas. Apertei a tecla 'l' para aplicar esse filtro à imagem</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/laplgauss_laplgauss.png" alt="laplgauss laplgauss">
+</div>
+<div class="title">Figure 18. Filtro laplaciano do gaussiano. Apertei a tecla 'd' para aplicar esse filtro à imagem</div>
+</div>
+<div class="paragraph">
+<p>Teoricamente, só se notaria grande diferença entre o filtro laplaciano e o filtro laplaciano do gaussiano caso a imagem adquirida fosse muito ruidosa, o que não é o caso. A aplicação dos dois filtros, portanto, gerou resultados bastante semelhantes.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_filtragem_no_domínio_espacial_parte_2">5. Filtragem no domínio espacial, parte 2</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_5_1_imagem_com_tilt_shift">5.1 Imagem com tilt-shift</h3>
+<div class="paragraph">
+<p>As imagens criadas com a técnica <em>tilt-shift</em> são resultado da soma de duas outras imagens formadas a partir de uma mesma imagem-fonte: uma que apresenta somente as bordas desfocadas e outra que apresenta somente o centro em foco. A idéia é criar um efeito artístico que dá mais atenção à alguma região específica da imagem.</p>
+</div>
+<div class="paragraph">
+<p>A listagem <em>tiltshift.cpp</em> mostra a implementação desse recurso. A discussão sobre a implementação segue logo em seguida.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+#include &lt;math.h&gt;
+
+using namespace cv;
+using namespace std;
+
+Mat filtered, original_32f, out1, out2, tiltshifted;
+Mat channels[3], aux_channels[3];
+Mat kernel(3, 3, CV_32F);
+
+float mascara[] = {
+	1, 2, 1,
+	2, 4, 2,
+	1, 2, 1
+};
+
+Mat original = imread("image.jpg");
+
+int decay_slider = 0, decay_slider_max = 100;
+int offset_slider = 0, offset_slider_max = 100;
+int alpha_slider = 0, alpha_slider_max = 100;
+int average_slider = 0, average_slider_max = 300;
+
+double alpha;
+double dcy;
+double avg;
+int offset;
+
+char trackbar_name[50];
+
+char key;
+
+Mat alpha_mask = Mat::zeros(Size(original.rows, original.cols), CV_8U);
+Mat c_alpha_mask = Mat::zeros(Size(original.rows, original.cols), CV_8U);
+
+double alphafunc(double d, int offset, int x, int rows){
+	double ptop = offset;
+	double pbottom = rows - offset;
+	return 0.5 * (tanh((x - ptop)/d) - tanh((x - pbottom)/d));
+}
+
+void make_mask(Mat* mask, double d, int offset){
+	int rows = mask-&gt;rows;
+	int cols = mask-&gt;cols;
+	for(int i = 0; i &lt; rows; i++){
+		for(int j = 0; j &lt; cols; j++){
+			mask-&gt;at&lt;uchar&gt;(i, j) = int(255 * alphafunc(d, offset, i, rows));
+		}
+	}
+}
+
+void make_negative(Mat* destiny, Mat source){
+	for(int i = 0; i &lt; destiny-&gt;rows; i++){
+		for (int j = 0; j &lt; destiny-&gt;cols; j++){
+			destiny-&gt;at&lt;uchar&gt;(i, j) = 255 - source.at&lt;uchar&gt;(i, j);
+		}
+	}
+};
+
+Mat make_kernel(float vec[], int size, bool mascara=false, float factor=1.0){
+  Mat tmp = Mat(size, size, CV_32F, vec);
+  if(mascara){
+    Mat aux;
+    scaleAdd(tmp, 1/factor, Mat::zeros(size, size, CV_32F), aux);
+    swap(aux, tmp);
+  }
+  return tmp;
+}
+
+void on_trackbar_change(int, void*){
+	alpha = (double) alpha_slider/alpha_slider_max;
+	dcy = (double) decay_slider;
+	offset = (double) offset_slider;
+	avg = (double) average_slider/100;
+
+	make_mask(&amp;alpha_mask, dcy, offset);
+	make_negative(&amp;c_alpha_mask, alpha_mask);
+	split(original, channels);
+	multiply(alpha_mask, channels[0], aux_channels[0], 1/255.0);
+	multiply(alpha_mask, channels[1], aux_channels[1], 1/255.0);
+	multiply(alpha_mask, channels[2], aux_channels[2], 1/255.0);
+	merge(aux_channels, 3, out1);
+
+	original.convertTo(original_32f, CV_32F);
+	kernel = make_kernel(mascara, 3, true, 16.0);
+	for(int i=0; i&lt;10; i++){
+		filter2D(original_32f, filtered, original_32f.depth(), kernel, Point(1, 1), 0);
+		original_32f = filtered.clone();
+	}
+	filtered.convertTo(out2, CV_8U);
+
+	split(out2, channels);
+	multiply(c_alpha_mask, channels[0], aux_channels[0], 1/255.0);
+	multiply(c_alpha_mask, channels[1], aux_channels[1], 1/255.0);
+	multiply(c_alpha_mask, channels[2], aux_channels[2], 1/255.0);
+	merge(aux_channels, 3, out2);
+
+	addWeighted(out1, alpha, out2, 1 - alpha, 0.0, tiltshifted);
+
+	addWeighted(tiltshifted, avg, tiltshifted, 0.0, 0.0, tiltshifted);
+
+	imshow("tiltshift", tiltshifted);
+}
+
+int main(int argvc, char** argv){
+
+	namedWindow("tiltshift", WINDOW_AUTOSIZE);
+
+	sprintf(trackbar_name, "Alpha %d", alpha_slider_max);
+	createTrackbar(trackbar_name, "tiltshift", &amp;alpha_slider, alpha_slider_max, on_trackbar_change);
+
+	sprintf(trackbar_name, "Decay %d", decay_slider_max);
+	createTrackbar(trackbar_name, "tiltshift", &amp;decay_slider, decay_slider_max, on_trackbar_change);
+
+	sprintf(trackbar_name, "Offset %d", offset_slider_max);
+	createTrackbar(trackbar_name, "tiltshift", &amp;offset_slider, offset_slider_max, on_trackbar_change);
+
+	on_trackbar_change(alpha_slider, 0);
+
+	key = waitKey(0);
+	if(key == 's'){
+		cout &lt;&lt; "saving edited copy" &lt;&lt; endl;
+		imwrite("image-edited.jpg", tiltshifted);
+	}
+
+	return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A imagem com bordas desfocadas resulta da ponderação da imagem original filtrada com uma outra imagem, como a que é mostrada na Figura 19:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/tiltshift_calpha.png" alt="tiltshift calpha">
+</div>
+<div class="title">Figure 19. Máscara que origina imagem com bordas desfocadas</div>
+</div>
+<div class="paragraph">
+<p>A imagem com o centro em foco resulta da ponderação da imagem original com uma outra imagem, como a que é mostrada na Figura 20:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/tiltshift_alpha.png" alt="tiltshift alpha">
+</div>
+<div class="title">Figure 20. Máscara que origina imagem com centro em foco</div>
+</div>
+<div class="paragraph">
+<p>A Figura 20 é obtida do negativo da Figura 19, através da função <code>make_negative</code>, que recebe como primeiro parâmetro a referência para a imagem a ser formada e, como segundo parâmetro, a imagem-fonte a ser negativada. Os parâmetros expostos pela interface, como se nota das Figuras 19 e 20, são:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Alpha</code>: controla a "mistura" das imagens desfocada e com foco. 0 é somente a imagem desfocada e 100 é somente a imagem com foco</p>
+</li>
+<li>
+<p><code>Decay</code>: controla a velocidade de decaimento das bordas das imagens ponderantes</p>
+</li>
+<li>
+<p><code>Offset</code>: controla a distância em pixels das bordas da região de desfoque</p>
+</li>
+<li>
+<p><code>Average</code> (não mostrado nas Figuras 19 e 20): controla o nível médio dos tons da imagem. É um fator de correção para corrigir possíveis escurecimentos notados nas imagens processadas. Vai de 0 a 300%.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">float mascara[] = {
+	1, 2, 1,
+	2, 4, 2,
+	1, 2, 1
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A máscara mostrada acima é usada na filtragem da imagem somente com as bordas desfocadas. Trata-se de um filtro gaussiano.</p>
+</div>
+<div class="paragraph">
+<p>As imagens ponderantes são criadas em</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">Mat alpha_mask = Mat::zeros(Size(original.rows, original.cols), CV_8U);
+Mat c_alpha_mask = Mat::zeros(Size(original.rows, original.cols), CV_8U);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>alpha_mask</code> e <code>c_alpha_mask</code> são matrizes do tipo <code>CV_8U</code> compostas somente por zeros e com mesmas dimensões da imagem original a ser processada.</p>
+</div>
+<div class="paragraph">
+<p>A interação do usuário com o programa se dá por meio da função <em>callback</em> <code>on_trackbar_change</code>, que é chamada todas as vezes que um dos <em>sliders</em> da interface é manipulado pelo usuário. Essa função, que é o <em>core</em> de <em>tiltshift.cpp</em> é detalhada a seguir.</p>
+</div>
+<div class="paragraph">
+<p>As linhas</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">alpha = (double) alpha_slider/alpha_slider_max;
+dcy = (double) decay_slider;
+offset = (double) offset_slider;
+avg = (double) average_slider/100;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>atualizam os valores da variáveis de estado <code>alpha</code>, <code>dcy</code>, <code>offset</code> e <code>avg</code>, que serão utilizadas na construção das imagens ponderantes, como se pode ver em</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">make_mask(&amp;alpha_mask, dcy, offset);
+make_negative(&amp;c_alpha_mask, alpha_mask);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>make_mask</code>, por sua vez, faz uso de <code>alphafunc</code> para atribuir valor aos pixels de <code>alpha_mask</code>. A função <code>alphafunc</code> retorna o resultado da operação</p>
+</div>
+<div class="stemblock">
+<div class="content">
+\[\frac{1}{2}\left[\tanh{\left(\frac{x-p_1}{d}\right)}-\tanh{\left(\frac{x-p_2}{d}\right)}\right]\]
+</div>
+</div>
+<div class="paragraph">
+<p>em que \(x\) é a linha do pixel atual, \(p_1\) é a linha resultante do offset a partir da borda superior, \(p2\) é a linha resultante do <em>offset</em> a partir da borda inferior e \(d\) é a intensidade do decaimento das bordas. O range de valores retornados dessa função é \([0,1\)] de modo que a linha, em <code>make_mask</code>,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">mask-&gt;at&lt;uchar&gt;(i, j) = int(255 * alphafunc(d, offset, i, rows));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>converte esses valores para o conjunto de inteiros \(0, 1, 2, \ldots, 255\), o que é necessário para que se forme as imagens exibidas nas Figuras 19 e 20 com o tipo <code>uchar</code>.</p>
+</div>
+<div class="paragraph">
+<p>Seguindo, a linha <code>split(original, channels);</code> divide cada canal da imagem original entre o vetor de três posições <code>channels</code>, em que cada posição desse vetor armazena um objeto <code>Mat</code> do OpenCV. Os canais de <code>channels</code> são então ponderados pela imagem <code>alpha_mask</code> e armazenados em <code>aux_channels</code>; note que <code>1/255.0</code> é um fator de escala para compensar a multiplicação por <code>255</code>, em <code>make_mask</code>, que possibilitou a amostra das Figuras 19 e 20 no monitor.</p>
+</div>
+<div class="paragraph">
+<p>Quando se fala em "ponderação", fala-se em multiplicação ponto a ponto de uma matriz por outra, o que é realizado pela função <code>multiply</code> do OpenCV; essa função recebe as duas matrizes a serem multiplicadas em seus dois primeiros argumentos e armazena o resultado na matriz passada no terceiro argumento. O quarto argumento é um fator de escala opcional, setado como <code>1/255.0</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">multiply(alpha_mask, channels[0], aux_channels[0], 1/255.0);
+multiply(alpha_mask, channels[1], aux_channels[1], 1/255.0);
+multiply(alpha_mask, channels[2], aux_channels[2], 1/255.0);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>merge(aux_channels, 3, out1);</code> junta os três canais processados no objeto <code>Mat out1</code>, que é a imagem somente com centro em foco.</p>
+</div>
+<div class="paragraph">
+<p>As linhas seguintes filtram a imagem original e ponderam-na por <code>c_alpha_mask</code>; o resultado é novamente armazenado em <code>aux_channels</code> e os canais são reunidos com a função <code>merge</code> no objeto <code>Mat out2</code>, que é a imagem somente com as bordas desfocadas.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">original.convertTo(original_32f, CV_32F);
+kernel = make_kernel(mascara, 3, true, 16.0);
+for(int i=0; i&lt;10; i++){
+	filter2D(original_32f, filtered, original_32f.depth(), kernel, Point(1, 1), 0);
+	original_32f = filtered.clone();
+}
+filtered.convertTo(out2, CV_8U);
+
+split(out2, channels);
+multiply(c_alpha_mask, channels[0], aux_channels[0], 1/255.0);
+multiply(c_alpha_mask, channels[1], aux_channels[1], 1/255.0);
+multiply(c_alpha_mask, channels[2], aux_channels[2], 1/255.0);
+merge(aux_channels, 3, out2);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>O <code>for loop</code> está sendo usado para aplicar o filtro 10 vezes, para que se obtenha um resultado de suavização suficientemente satisfatório.</p>
+</div>
+<div class="paragraph">
+<p>A linha</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp">addWeighted(out1, alpha, out2, 1 - alpha, 0.0, tiltshifted);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>armazena o resultado da ponderação de <code>out1</code> e <code>out2</code> em <code>Mat tiltshifted</code>. A imagem <code>out1</code> é ponderada com peso <code>alpha</code>, enquanto a imagem <code>out2</code>, com peso <code>1 - alpha</code>.</p>
+</div>
+<div class="paragraph">
+<p>Por fim, <code>addWeighted(tiltshifted, avg, tiltshifted, 0.0, 0.0, tiltshifted);</code> corrige o nível médio dos tons da imagem.</p>
+</div>
+<div class="paragraph">
+<p>O resultado da execução do programa pode ser visto nas seguintes imagens:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/image.jpg" alt="image">
+</div>
+<div class="title">Figure 21. Imagem original</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/image-edited.jpg" alt="image edited">
+</div>
+<div class="title">Figure 22. Imagem processada</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/tilt_interface.png" alt="tilt interface">
+</div>
+<div class="title">Figure 23. Interface mostrando possíveis parâmetros para o processamento</div>
+</div>
+<div class="paragraph">
+<p>Observe que as bordas da Figura 22 estão desfocadas, um efeito bem interessante para se ressaltar a importância de um elemento da cena.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_2_vídeo_com_tilt_shift">5.2 Vídeo com tilt-shift</h3>
+<div class="paragraph">
+<p>Em andamento.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-08-17 10:40:59 -03
+Last updated 2019-10-03 02:19:17 -03
 </div>
 </div>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: { equationNumbers: { autoNumber: "none" } }
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.6.0/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
 </body>
 </html>
