@@ -958,7 +958,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="title">Figure 5. Imagem sem bolhas das bordas</div>
 </div>
 <div class="paragraph">
-<p>O próximo passo é realizar o processo de rotulação e contagem das bolhas que permaneceram na imagem, o que é feito pela função <code>labeling</code>. O parâmetro <code>objs</code> que é passado na chamada dessa função é a quantidade total de objetos, inicializada em zero. <code>labeling</code> percorre a imagem procurando pixels brancos, de modo que, quando os acha, incrementa <code>objs</code> e faz <code>floodFill</code> no pixel atual com o valor de <code>objs</code>, que é justamente a quantidade de objetos até então encontrados, e, portanto, o rótulo utilizado. O <code>floodFill</code> garante que todos os pixels vizinhos ao pixel branco recentemente encontrado deixem de ser brancos, de modo que a região não será contabilizada novamente. Observe na figura abaixo o resultado da função <code>labeling</code>: de cima pra baixo, nota-se que as bordas vão ficando mais claras; isso é porque o valor de <code>objs</code>, que é incrementado toda vez que se acha uma nova região branca, é usado, como já explicado, para rotular a região encontrada.</p>
+<p>O próximo passo é realizar o processo de rotulação e contagem das bolhas que permaneceram na imagem, o que é feito pela função <code>labeling</code>. O parâmetro <code>objs</code> que é passado na chamada dessa função é a quantidade total de objetos encontrados, inicializada em zero. <code>labeling</code> percorre a imagem procurando pixels brancos, de modo que, quando os acha, incrementa <code>objs</code> e faz <code>floodFill</code> no pixel atual com o valor de <code>objs</code>. O <code>floodFill</code> garante que todos os pixels vizinhos ao pixel branco recentemente encontrado deixem de ser brancos, para que não haja risco da região ser contabilizada novamente. Observe na figura abaixo o resultado da função <code>labeling</code>: de cima pra baixo, nota-se que as bordas vão ficando mais claras; isso é porque o valor de <code>objs</code>, que é incrementado toda vez que se acha uma nova região branca, é usado, como já explicado, para rotular a região encontrada.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -976,7 +976,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="title">Figure 7. Imagem com rotulada com fundo branco</div>
 </div>
 <div class="paragraph">
-<p>Finalmente, a última etapa do algoritmo é a aplicação da função <code>contar_buracos</code>. O parâmetro <code>objs_esburacados</code> desempenha o mesmo papel que o parâmetro <code>objs</code> passado na função <code>labeling</code>. A função <code>contar_buracos</code> percorre a imagem procurando por pixels pretos; veja que, na imagem processada até o momento, os pixels pretos só podem representar o interior de um objeto, pois todas as bordas estão pintadas com tom de cinza diferente de 0 (preto). Assim, quando um pixel preto é encontrado, se o seu vizinho da esquerda é cinza, trata-se de uma bolha com buraco; incrementa-se, portanto, <code>objs_esburacados</code> e faz-se <code>floodFill</code> com o pixel atual (preto) e seu vizinho esquerdo (cinza) usando o tom 255. Em contrapartida, se um pixel preto é encontrado e seu vizinho esquerdo não é cinza, trata-se de um objeto que já foi contabilizado e que tinha mais de um buraco; nesse caso, faz-se somente <code>floodfill</code> nesse pixel sem incrementar-se <code>objs_esburacados</code>.</p>
+<p>Finalmente, a última etapa do algoritmo é a aplicação da função <code>contar_buracos</code>. O parâmetro <code>objs_esburacados</code> desempenha o mesmo papel que o parâmetro <code>objs</code> passado na função <code>labeling</code>. A função <code>contar_buracos</code> percorre a imagem procurando por pixels pretos; veja que, na imagem processada até o momento, os pixels pretos só podem representar o interior de uma bolha, pois todas as bordas estão pintadas com tom de cinza diferente de 0 (preto). Assim, quando um pixel preto é encontrado, se o seu vizinho da esquerda é cinza, trata-se de uma bolha com buraco; incrementa-se, portanto, <code>objs_esburacados</code> e faz-se <code>floodFill</code> com o pixel atual (preto) e seu vizinho esquerdo (cinza) usando o tom 255. Em contrapartida, se um pixel preto é encontrado e seu vizinho esquerdo não é cinza, trata-se de um objeto que já foi contabilizado e que tinha mais de um buraco; nesse caso, faz-se somente <code>floodfill</code> nesse pixel sem incrementar-se <code>objs_esburacados</code>.</p>
 </div>
 <div class="paragraph">
 <p>Na cena sobram somente os objetos sem buracos e rotulados como mostrado aqui:</p>
@@ -1684,7 +1684,7 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 </ul>
 </div>
 <div class="paragraph">
-<p><code>key</code> é uma variável do tipo <code>char</code>, que armazena a última tecla pressionada pelo usuário. A tecla <code>d</code> equivale à aplicação do filtro laplaciano do gaussiano, que foi implementado com a aplicação do filtro gaussiano seguida da aplicação do filtro laplaciano; isso está contido dentro do bloco <code>else</code> acima. Os demais valores que podem ser assumidos por <code>key</code> executam a suite dentro de <code>if(key != 'd')</code>.</p>
+<p><code>key</code> é uma variável do tipo <code>char</code>, que armazena a última tecla pressionada pelo usuário. A tecla <code>d</code> equivale à aplicação do filtro laplaciano do gaussiano, que foi implementado com a aplicação do filtro gaussiano seguida da aplicação do filtro laplaciano; isso está contido dentro do bloco <code>else</code> mostrado acima. Os demais valores que podem ser assumidos por <code>key</code> executam a suite dentro de <code>if(key != 'd')</code>.</p>
 </div>
 <div class="paragraph">
 <p>A linha <code>frameFiltered.convertTo(result, CV_8U);</code> converte o frame filtrado para o formato <code>CV_8U</code>, necessário para a exibição na tela.</p>
@@ -2160,12 +2160,6 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 	<span class="tok-p">}</span><span class="tok-k">else</span><span class="tok-p">{}</span>
 <span class="tok-p">}</span>
 
-
-
-<span class="tok-kt">void</span> <span class="tok-nf">save_video</span><span class="tok-p">(</span><span class="tok-kt">void</span><span class="tok-p">){</span>
-	<span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Video editado salvo&quot;</span><span class="tok-p">;</span>
-<span class="tok-p">}</span>
-
 <span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argvc</span><span class="tok-p">,</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">){</span>
 
 	<span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;tiltshiftvideo&quot;</span><span class="tok-p">,</span> <span class="tok-n">WINDOW_AUTOSIZE</span><span class="tok-p">);</span>
@@ -2230,7 +2224,7 @@ Your browser does not support the video tag.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-10-03 21:14:31 -03
+Last updated 2019-10-03 21:36:50 -03
 </div>
 </div>
 <script type="text/x-mathjax-config">
