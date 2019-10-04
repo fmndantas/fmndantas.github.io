@@ -497,6 +497,39 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <span id="author" class="author">Fernando Dantas</span><br>
 <span id="email" class="email"><a href="mailto:fernandodantas1996@gmail.com">fernandodantas1996@gmail.com</a></span><br>
 </div>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_1_manipulação_de_pixels">1. Manipulação de pixels</a>
+<ul class="sectlevel2">
+<li><a href="#_1_1_negativo_de_uma_região">1.1 Negativo de uma região</a></li>
+<li><a href="#_1_2_troca_dos_quadrantes_de_uma_imagem">1.2 Troca dos quadrantes de uma imagem</a></li>
+</ul>
+</li>
+<li><a href="#_2_rotulação_de_regiões">2. Rotulação de regiões</a>
+<ul class="sectlevel2">
+<li><a href="#_2_1_contagem_de_bolhas_com_buracos">2.1 Contagem de bolhas com buracos</a></li>
+</ul>
+</li>
+<li><a href="#_3_manipulação_de_histogramas">3. Manipulação de histogramas</a>
+<ul class="sectlevel2">
+<li><a href="#_3_1_equalização_de_imagem">3.1 Equalização de imagem</a></li>
+<li><a href="#_3_2_detecção_de_movimento">3.2 Detecção de movimento</a></li>
+</ul>
+</li>
+<li><a href="#_4_filtragem_no_domínio_espacial_parte_1">4. Filtragem no domínio espacial, parte 1</a>
+<ul class="sectlevel2">
+<li><a href="#_4_1_filtro_laplaciano_do_gaussiano">4.1 Filtro laplaciano do gaussiano</a></li>
+</ul>
+</li>
+<li><a href="#_5_filtragem_no_domínio_espacial_parte_2">5. Filtragem no domínio espacial, parte 2</a>
+<ul class="sectlevel2">
+<li><a href="#_5_1_imagem_com_tilt_shift">5.1 Imagem com tilt-shift</a></li>
+<li><a href="#_5_2_vídeo_com_tilt_shift">5.2 Vídeo com tilt-shift</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
@@ -506,7 +539,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 biblioteca OpenCV na implementação de algoritmos que lidam com processamento digital de imagens.</p>
 </div>
 <div class="paragraph">
-<p>Assume-se que o leitor tenha certa bagagem com o tópico de processamento de imagens, de maneira que a teoria não será profundamente detalhada; outrossim, todos os programas serão apresentados com uma pequena contextualização teórica.</p>
+<p>Assume-se que o leitor tenha certa bagagem com PDI, de maneira que a teoria não será profundamente detalhada; outrossim, todos os programas serão apresentados com uma pequena contextualização teórica.</p>
 </div>
 <div class="paragraph">
 <p><strong>As implementações mostradas aqui foram testadas e executadas somente em ambiente de desenvolvimento Linux, mas devem funcionar em outros sistemas operacionais com devidas adaptações.</strong></p>
@@ -535,11 +568,11 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">make listagem.cpp</code></pre>
+<pre class="pygments highlight"><code data-lang="bash">make exemplo.cpp</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Se tudo correr como esperado, deve surgir um <code>.so</code> no diretório atual com mesmo nome do arquivo <code>.cpp</code>.</p>
+<p>Se tudo correr como esperado, deve surgir um executável no diretório atual com mesmo nome de <code>exemplo.cpp</code>.</p>
 </div>
 </div>
 </div>
@@ -645,7 +678,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 </div>
 </div>
 <div class="paragraph">
-<p>O código acima demonstra a transformação mencionada. Observe que cada pixel \((i,j)\) da imagem tem seu tom de cinza substituído por 255 menos o seu próprio tom de cinza. <code>image.at&lt;template&gt;(i, j)</code> é usada tanto para atribuir o novo valor ao pixel, quanto para acessar o valor do pixel.</p>
+<p>O código acima demonstra a transformação mencionada. Observe que cada pixel \((i,j)\) da imagem têm seu tom de cinza substituído por 255 menos o seu próprio tom de cinza. <code>image.at&lt;template&gt;(i, j)</code> é usada tanto para atribuir o novo valor ao pixel, quanto para acessar o valor do pixel.</p>
 </div>
 <div class="paragraph">
 <p>O resultado da utilização de <em>regions</em> pode ser visualizado nas duas figuras a seguir, em que a primeira é a figura original e a segunda, a mesma figura processada. Para criar o efeito de imagem negativa, usei</p>
@@ -746,15 +779,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <p>A função <code>swapped_img</code> recebe a imagem original e, utilizando os quadrantes retornados de <code>swapped_quadrants</code>, cria uma imagem que é a concatenação dos quadrantes trocados, usando as funções de concatenação <code>hconcat</code> e <code>vconcat</code>.</p>
 </div>
 <div class="paragraph">
-<p>A utilização do programa foi feita com</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="bash">./trocaregioes</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>ainda com a imagem <em>praia.jpg</em>.</p>
+<p>A utilização do programa foi feita com <code>./trocaregioes</code>, ainda com a imagem <em>praia.jpg</em>.</p>
 </div>
 <div class="paragraph">
 <p>A imagem processada resultante foi</p>
@@ -774,7 +799,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="sect2">
 <h3 id="_2_1_contagem_de_bolhas_com_buracos">2.1 Contagem de bolhas com buracos</h3>
 <div class="paragraph">
-<p>O objetivo desse algoritmo é a contagem de bolhas de cor preta, numa imagem binária com fundo branco. O <em>plus</em> é que o programa é capaz, também, de contar a quantidades de bolhas com buracos.</p>
+<p>O objetivo desse algoritmo é a contagem de bolhas de cor branca, numa imagem binária com fundo preto. O <em>plus</em> é que o programa é capaz, também, de contar a quantidades de bolhas com buracos.</p>
 </div>
 <div class="paragraph">
 <p>Abaixo, a implementação, posteriormente explicada.</p>
@@ -924,7 +949,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="title">Figure 4. Imagem original</div>
 </div>
 <div class="paragraph">
-<p>A função <code>remover_bolhas_das_bordas</code> é o primeiro passo na execução do programa. Essa função percorre as bordas da imagem simplesmente executando o <a href="https://en.wikipedia.org/wiki/Flood_fill">floodFill</a> em todos os pixels pretos encontrados. Esse passo é necessário porque não se pode assumir que as bolhas nas bordas tenham buracos ou não. A imagem abaixo mostra a figura sem as bolhas das bordas.</p>
+<p>A função <code>remover_bolhas_das_bordas</code> é o primeiro passo na execução do programa. Essa função percorre as bordas da imagem simplesmente executando o <a href="https://en.wikipedia.org/wiki/Flood_fill">floodFill</a> em todos os pixels brancos encontrados. Esse passo é necessário porque não se pode assumir que as bolhas nas bordas tenham buracos ou não. A imagem abaixo mostra a figura sem as bolhas das bordas.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -933,7 +958,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="title">Figure 5. Imagem sem bolhas das bordas</div>
 </div>
 <div class="paragraph">
-<p>O próximo passo é realizar o processo de rotulação e contagem das bolhas que permaneceram na imagem, o que é feito pela função <code>labeling</code>. O parâmetro <code>&amp;objs</code> que é passado na chamada dessa função é a quantidade total de objetos, inicializada em zero. <code>labeling</code> percorre a imagem procurando pixels brancos, de modo que, quando os acha, incrementa <code>objs</code> e faz <code>floodFill</code> no pixel atual com o valor de <code>objs</code>, que é justamente a quantidade de objetos até então encontrados, e, portanto, o rótulo utilizado. O <code>floodFill</code> garante que todos os pixels vizinhos ao pixel branco recentemente encontrado deixem de ser brancos, de modo que a região não será contabilizada novamente. Observe na figura abaixo o resultado da função <code>labeling</code>: de cima pra baixo, nota-se que as bordas vão ficando mais claras; isso é porque o valor de <code>objs</code>, que é incrementado toda vez que se acha uma nova região branca, é usado, como já explicado, para rotular a região encontrada.</p>
+<p>O próximo passo é realizar o processo de rotulação e contagem das bolhas que permaneceram na imagem, o que é feito pela função <code>labeling</code>. O parâmetro <code>objs</code> que é passado na chamada dessa função é a quantidade total de objetos, inicializada em zero. <code>labeling</code> percorre a imagem procurando pixels brancos, de modo que, quando os acha, incrementa <code>objs</code> e faz <code>floodFill</code> no pixel atual com o valor de <code>objs</code>, que é justamente a quantidade de objetos até então encontrados, e, portanto, o rótulo utilizado. O <code>floodFill</code> garante que todos os pixels vizinhos ao pixel branco recentemente encontrado deixem de ser brancos, de modo que a região não será contabilizada novamente. Observe na figura abaixo o resultado da função <code>labeling</code>: de cima pra baixo, nota-se que as bordas vão ficando mais claras; isso é porque o valor de <code>objs</code>, que é incrementado toda vez que se acha uma nova região branca, é usado, como já explicado, para rotular a região encontrada.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -951,7 +976,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="title">Figure 7. Imagem com rotulada com fundo branco</div>
 </div>
 <div class="paragraph">
-<p>Finalmente, a última etapa do algoritmo é a aplicação da função <code>contar_buracos</code>. O parâmetro <code>&amp;objs_esburacados</code> desempenha o mesmo papel que o parâmetro <code>&amp;objs</code> passado na função <code>labeling</code>. A função <code>contar_buracos</code> percorre a imagem procurando por pixels pretos; veja que, na imagem processada até o momento, os pixels pretos só podem representar o interior de um objeto, pois todas as bordas estão pintadas com tom de cinza diferente de 0 (preto). Assim, quando um pixel preto é encontrado, se o seu vizinho da esquerda é cinza, trata-se de uma bolha com buraco; incrementa-se, portanto, <code>&amp;objs_esburacados</code> e faz-se <code>floodFill</code> com o pixel atual (preto) e seu vizinho esquerdo (cinza) usando o tom 255. Em contrapartida, se um pixel preto é encontrado e seu vizinho esquerdo não é cinza, trata-se de um objeto que já foi contabilizado e que tinha mais de um buraco; nesse caso, faz-se somente <code>floodfill</code> nesse pixel sem incrementar-se <code>objs_esburacados</code>.</p>
+<p>Finalmente, a última etapa do algoritmo é a aplicação da função <code>contar_buracos</code>. O parâmetro <code>objs_esburacados</code> desempenha o mesmo papel que o parâmetro <code>objs</code> passado na função <code>labeling</code>. A função <code>contar_buracos</code> percorre a imagem procurando por pixels pretos; veja que, na imagem processada até o momento, os pixels pretos só podem representar o interior de um objeto, pois todas as bordas estão pintadas com tom de cinza diferente de 0 (preto). Assim, quando um pixel preto é encontrado, se o seu vizinho da esquerda é cinza, trata-se de uma bolha com buraco; incrementa-se, portanto, <code>objs_esburacados</code> e faz-se <code>floodFill</code> com o pixel atual (preto) e seu vizinho esquerdo (cinza) usando o tom 255. Em contrapartida, se um pixel preto é encontrado e seu vizinho esquerdo não é cinza, trata-se de um objeto que já foi contabilizado e que tinha mais de um buraco; nesse caso, faz-se somente <code>floodfill</code> nesse pixel sem incrementar-se <code>objs_esburacados</code>.</p>
 </div>
 <div class="paragraph">
 <p>Na cena sobram somente os objetos sem buracos e rotulados como mostrado aqui:</p>
@@ -983,7 +1008,7 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <p>O algoritmo apresentado aqui realiza a equalização do histograma de uma imagem.</p>
 </div>
 <div class="paragraph">
-<p>O histograma é uma função que mapeia um tom de cinza na quantidade de pixels presentes na imagem com esse tom de cinza. A equalização de histograma, falando sumariamente, redistribui os tons de cinza da imagem entre tons de cinza de um <em>range</em> pré-determinado. Outros detalhes serão apresentados durante a explicação da implementação, mostrada a seguir (foi assumido o processamento em tempo real e as imagens capturas em tom de cinza):</p>
+<p>O histograma é uma função que mapeia um tom de cinza na quantidade de pixels presentes na imagem com esse tom de cinza. A equalização de histograma, sumariamente, redistribui os tons de cinza da imagem entre tons de cinza de um <em>range</em> pré-determinado. Outros detalhes serão apresentados durante a explicação da implementação, mostrada a seguir (foi assumido o processamento em tempo real e as imagens capturas em tom de cinza):</p>
 </div>
 <div class="listingblock">
 <div class="title">equalize.cpp</div>
@@ -1065,7 +1090,7 @@ int main(int argc, char** argv){
 </div>
 </div>
 <div class="paragraph">
-<p><code>cap</code> é um objeto <code>VideoCapture</code> da biblioteca OpenCV para lidar com a captura de vídeo. Neste programa, optou-se por utilizar a câmera embutida do computador, com <code>cap.open(0)</code>. O loop <code>while</code> mantém o programa capturando continuamente os frames e realizando os processamento que serão detalhados ao decorrer da explicação. Esse tipo de uso do <code>while</code> será usado a partir de agora em algumas implementações posteriores.</p>
+<p><code>cap</code> é um objeto <code>VideoCapture</code> da biblioteca OpenCV para lidar com a captura de vídeo. Neste programa, optou-se por utilizar a câmera embutida do computador, com <code>cap.open(0)</code>. O loop <code>while</code> mantém o programa capturando continuamente os frames e realizando os processamentos que serão detalhados ao decorrer da explicação. Esse tipo de uso do <code>while</code> será usado a partir de agora em algumas implementações posteriores.</p>
 </div>
 <div class="paragraph">
 <p>Continuando, a linha <code>cvtColor(image, image, CV_BGR2GRAY);</code> converte a imagem colorida capturada do objeto <code>cap</code> em uma imagem somente com tons de cinza. Cria-se uma cópia de imagem no estado atual, com <code>copy = image.clone()</code>, que será mostrada como um comparativo com a imagem processada pela equalização.</p>
@@ -1268,7 +1293,7 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 <p><code>cp_hist</code>: histograma copiado do frame passado, usado na comparação com o histograma do frame atual</p>
 </li>
 <li>
-<p><code>maxima_diferenca</code>: limiar para que a frequência de uma escala de cinza em <code>hist</code> ser considerada diferente da frequencia da mesma escala de cinza em <code>cp_hist</code></p>
+<p><code>maxima_diferenca</code>: limiar para que a frequência de uma escala de cinza em <code>hist</code> ser considerada diferente da frequência da mesma escala de cinza em <code>cp_hist</code></p>
 </li>
 <li>
 <p><code>threshold</code>: limiar da quantidade de frequências diferentes para que seja estabelecido que houve movimento</p>
@@ -2021,7 +2046,183 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 <div class="sect2">
 <h3 id="_5_2_vídeo_com_tilt_shift">5.2 Vídeo com tilt-shift</h3>
 <div class="paragraph">
-<p>Em andamento.</p>
+<p>O programa <em>tiltshiftvideo.cpp</em> funciona de maneira relativamente similar à <em>tiltshift.cpp</em>, permitindo, no entanto, que o usuário interaja com o vídeo em tempo real, mudando os parâmetros <code>Alpha</code>, <code>Decay</code>, <code>Offset</code> e <code>Average</code>, conforme já explicado na seção <a href="#_5_1_imagem_com_tilt_shift">5.1</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">tiltshiftvideo.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;opencv2/opencv.hpp&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;math.h&gt;</span><span class="tok-cp"></span>
+
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">cv</span><span class="tok-p">;</span>
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">std</span><span class="tok-p">;</span>
+
+<span class="tok-n">Mat</span> <span class="tok-n">filtered</span><span class="tok-p">,</span> <span class="tok-n">frame_32f</span><span class="tok-p">,</span> <span class="tok-n">out1</span><span class="tok-p">,</span> <span class="tok-n">out2</span><span class="tok-p">,</span> <span class="tok-n">tiltshifted</span><span class="tok-p">;</span>
+<span class="tok-n">Mat</span> <span class="tok-n">channels</span><span class="tok-p">[</span><span class="tok-mi">3</span><span class="tok-p">],</span> <span class="tok-n">aux_channels</span><span class="tok-p">[</span><span class="tok-mi">3</span><span class="tok-p">];</span>
+<span class="tok-n">Mat</span> <span class="tok-nf">kernel</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">);</span>
+
+<span class="tok-kt">float</span> <span class="tok-n">mascara</span><span class="tok-p">[]</span> <span class="tok-o">=</span> <span class="tok-p">{</span>
+	<span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">2</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span>
+	<span class="tok-mi">2</span><span class="tok-p">,</span> <span class="tok-mi">4</span><span class="tok-p">,</span> <span class="tok-mi">2</span><span class="tok-p">,</span>
+	<span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">2</span><span class="tok-p">,</span> <span class="tok-mi">1</span>
+<span class="tok-p">};</span>
+
+<span class="tok-n">VideoCapture</span> <span class="tok-nf">cap</span><span class="tok-p">(</span><span class="tok-s">&quot;video.mpg&quot;</span><span class="tok-p">);</span>
+<span class="tok-kt">int</span> <span class="tok-n">width</span>  <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_WIDTH</span><span class="tok-p">);</span>
+<span class="tok-kt">int</span> <span class="tok-n">height</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_HEIGHT</span><span class="tok-p">);</span>
+<span class="tok-k">auto</span> <span class="tok-n">fps</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FPS</span><span class="tok-p">);</span>
+
+<span class="tok-n">Mat</span> <span class="tok-n">frame</span><span class="tok-p">;</span>
+
+<span class="tok-kt">int</span> <span class="tok-n">decay_slider</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">decay_slider_max</span> <span class="tok-o">=</span> <span class="tok-mi">200</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">offset_slider</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">offset_slider_max</span> <span class="tok-o">=</span> <span class="tok-n">height</span><span class="tok-o">/</span><span class="tok-mi">2</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">alpha_slider</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">alpha_slider_max</span> <span class="tok-o">=</span> <span class="tok-mi">100</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">average_slider</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">average_slider_max</span> <span class="tok-o">=</span> <span class="tok-mi">300</span><span class="tok-p">;</span>
+
+<span class="tok-kt">double</span> <span class="tok-n">alpha</span><span class="tok-p">;</span>
+<span class="tok-kt">double</span> <span class="tok-n">dcy</span><span class="tok-p">;</span>
+<span class="tok-kt">double</span> <span class="tok-n">avg</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-n">offset</span><span class="tok-p">;</span>
+
+<span class="tok-kt">char</span> <span class="tok-n">trackbar_name</span><span class="tok-p">[</span><span class="tok-mi">50</span><span class="tok-p">];</span>
+
+<span class="tok-kt">char</span> <span class="tok-n">key</span><span class="tok-p">;</span>
+
+<span class="tok-n">Mat</span> <span class="tok-n">alpha_mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-o">::</span><span class="tok-n">zeros</span><span class="tok-p">(</span><span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-n">height</span><span class="tok-p">),</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
+<span class="tok-n">Mat</span> <span class="tok-n">c_alpha_mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-o">::</span><span class="tok-n">zeros</span><span class="tok-p">(</span><span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-n">height</span><span class="tok-p">),</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
+
+<span class="tok-kt">double</span> <span class="tok-nf">alphafunc</span><span class="tok-p">(</span><span class="tok-kt">double</span> <span class="tok-n">d</span><span class="tok-p">,</span> <span class="tok-kt">int</span> <span class="tok-n">offset</span><span class="tok-p">,</span> <span class="tok-kt">int</span> <span class="tok-n">x</span><span class="tok-p">,</span> <span class="tok-kt">int</span> <span class="tok-n">rows</span><span class="tok-p">){</span>
+	<span class="tok-kt">double</span> <span class="tok-n">ptop</span> <span class="tok-o">=</span> <span class="tok-n">offset</span><span class="tok-p">;</span>
+	<span class="tok-kt">double</span> <span class="tok-n">pbottom</span> <span class="tok-o">=</span> <span class="tok-n">rows</span> <span class="tok-o">-</span> <span class="tok-n">offset</span><span class="tok-p">;</span>
+	<span class="tok-k">return</span> <span class="tok-mf">0.5</span> <span class="tok-o">*</span> <span class="tok-p">(</span><span class="tok-n">tanh</span><span class="tok-p">((</span><span class="tok-n">x</span> <span class="tok-o">-</span> <span class="tok-n">ptop</span><span class="tok-p">)</span><span class="tok-o">/</span><span class="tok-n">d</span><span class="tok-p">)</span> <span class="tok-o">-</span> <span class="tok-n">tanh</span><span class="tok-p">((</span><span class="tok-n">x</span> <span class="tok-o">-</span> <span class="tok-n">pbottom</span><span class="tok-p">)</span><span class="tok-o">/</span><span class="tok-n">d</span><span class="tok-p">));</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">void</span> <span class="tok-nf">make_mask</span><span class="tok-p">(</span><span class="tok-n">Mat</span><span class="tok-o">*</span> <span class="tok-n">mask</span><span class="tok-p">,</span> <span class="tok-kt">double</span> <span class="tok-n">d</span><span class="tok-p">,</span> <span class="tok-kt">int</span> <span class="tok-n">offset</span><span class="tok-p">){</span>
+	<span class="tok-kt">int</span> <span class="tok-n">rows</span> <span class="tok-o">=</span> <span class="tok-n">mask</span><span class="tok-o">-&gt;</span><span class="tok-n">rows</span><span class="tok-p">;</span>
+	<span class="tok-kt">int</span> <span class="tok-n">cols</span> <span class="tok-o">=</span> <span class="tok-n">mask</span><span class="tok-o">-&gt;</span><span class="tok-n">cols</span><span class="tok-p">;</span>
+	<span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">i</span> <span class="tok-o">&lt;</span> <span class="tok-n">rows</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
+		<span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">j</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">j</span> <span class="tok-o">&lt;</span> <span class="tok-n">cols</span><span class="tok-p">;</span> <span class="tok-n">j</span><span class="tok-o">++</span><span class="tok-p">){</span>
+			<span class="tok-n">mask</span><span class="tok-o">-&gt;</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">)</span> <span class="tok-o">=</span> <span class="tok-kt">int</span><span class="tok-p">(</span><span class="tok-mi">255</span> <span class="tok-o">*</span> <span class="tok-n">alphafunc</span><span class="tok-p">(</span><span class="tok-n">d</span><span class="tok-p">,</span> <span class="tok-n">offset</span><span class="tok-p">,</span> <span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">rows</span><span class="tok-p">));</span>
+		<span class="tok-p">}</span>
+	<span class="tok-p">}</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">void</span> <span class="tok-nf">make_negative</span><span class="tok-p">(</span><span class="tok-n">Mat</span><span class="tok-o">*</span> <span class="tok-n">destiny</span><span class="tok-p">,</span> <span class="tok-n">Mat</span> <span class="tok-n">source</span><span class="tok-p">){</span>
+	<span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">i</span> <span class="tok-o">&lt;</span> <span class="tok-n">destiny</span><span class="tok-o">-&gt;</span><span class="tok-n">rows</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
+		<span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">j</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">j</span> <span class="tok-o">&lt;</span> <span class="tok-n">destiny</span><span class="tok-o">-&gt;</span><span class="tok-n">cols</span><span class="tok-p">;</span> <span class="tok-n">j</span><span class="tok-o">++</span><span class="tok-p">){</span>
+			<span class="tok-n">destiny</span><span class="tok-o">-&gt;</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">)</span> <span class="tok-o">=</span> <span class="tok-mi">255</span> <span class="tok-o">-</span> <span class="tok-n">source</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">);</span>
+		<span class="tok-p">}</span>
+	<span class="tok-p">}</span>
+<span class="tok-p">};</span>
+
+<span class="tok-n">Mat</span> <span class="tok-nf">make_kernel</span><span class="tok-p">(</span><span class="tok-kt">float</span> <span class="tok-n">vec</span><span class="tok-p">[],</span> <span class="tok-kt">int</span> <span class="tok-n">size</span><span class="tok-p">,</span> <span class="tok-kt">bool</span> <span class="tok-n">average</span><span class="tok-o">=</span><span class="tok-nb">false</span><span class="tok-p">,</span> <span class="tok-kt">float</span> <span class="tok-n">factor</span><span class="tok-o">=</span><span class="tok-mf">1.0</span><span class="tok-p">){</span>
+  <span class="tok-n">Mat</span> <span class="tok-n">tmp</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-n">size</span><span class="tok-p">,</span> <span class="tok-n">size</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">,</span> <span class="tok-n">vec</span><span class="tok-p">);</span>
+  <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">average</span><span class="tok-p">){</span>
+    <span class="tok-n">Mat</span> <span class="tok-n">aux</span><span class="tok-p">;</span>
+    <span class="tok-n">scaleAdd</span><span class="tok-p">(</span><span class="tok-n">tmp</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-n">factor</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-o">::</span><span class="tok-n">zeros</span><span class="tok-p">(</span><span class="tok-n">size</span><span class="tok-p">,</span> <span class="tok-n">size</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">),</span> <span class="tok-n">aux</span><span class="tok-p">);</span>
+    <span class="tok-n">swap</span><span class="tok-p">(</span><span class="tok-n">aux</span><span class="tok-p">,</span> <span class="tok-n">tmp</span><span class="tok-p">);</span>
+  <span class="tok-p">}</span>
+  <span class="tok-k">return</span> <span class="tok-n">tmp</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">void</span> <span class="tok-nf">video_processing</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-p">,</span> <span class="tok-kt">void</span><span class="tok-o">*</span><span class="tok-p">){</span>
+	<span class="tok-n">cap</span> <span class="tok-o">&gt;&gt;</span> <span class="tok-n">frame</span><span class="tok-p">;</span>
+	<span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">frame</span><span class="tok-p">.</span><span class="tok-n">empty</span><span class="tok-p">()){</span>
+		<span class="tok-n">alpha</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">double</span><span class="tok-p">)</span> <span class="tok-n">alpha_slider</span><span class="tok-o">/</span><span class="tok-n">alpha_slider_max</span><span class="tok-p">;</span>
+		<span class="tok-n">dcy</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">double</span><span class="tok-p">)</span> <span class="tok-n">decay_slider</span><span class="tok-p">;</span>
+		<span class="tok-n">offset</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">double</span><span class="tok-p">)</span> <span class="tok-n">offset_slider</span><span class="tok-p">;</span>
+		<span class="tok-n">avg</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">double</span><span class="tok-p">)</span> <span class="tok-n">average_slider</span><span class="tok-o">/</span><span class="tok-mi">100</span><span class="tok-p">;</span>
+
+		<span class="tok-n">make_mask</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">alpha_mask</span><span class="tok-p">,</span> <span class="tok-n">dcy</span><span class="tok-p">,</span> <span class="tok-n">offset</span><span class="tok-p">);</span>
+		<span class="tok-n">make_negative</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">c_alpha_mask</span><span class="tok-p">,</span> <span class="tok-n">alpha_mask</span><span class="tok-p">);</span>
+		<span class="tok-n">split</span><span class="tok-p">(</span><span class="tok-n">frame</span><span class="tok-p">,</span> <span class="tok-n">channels</span><span class="tok-p">);</span>
+		<span class="tok-n">multiply</span><span class="tok-p">(</span><span class="tok-n">alpha_mask</span><span class="tok-p">,</span> <span class="tok-n">channels</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-n">aux_channels</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">255.0</span><span class="tok-p">);</span>
+		<span class="tok-n">multiply</span><span class="tok-p">(</span><span class="tok-n">alpha_mask</span><span class="tok-p">,</span> <span class="tok-n">channels</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">],</span> <span class="tok-n">aux_channels</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">],</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">255.0</span><span class="tok-p">);</span>
+		<span class="tok-n">multiply</span><span class="tok-p">(</span><span class="tok-n">alpha_mask</span><span class="tok-p">,</span> <span class="tok-n">channels</span><span class="tok-p">[</span><span class="tok-mi">2</span><span class="tok-p">],</span> <span class="tok-n">aux_channels</span><span class="tok-p">[</span><span class="tok-mi">2</span><span class="tok-p">],</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">255.0</span><span class="tok-p">);</span>
+		<span class="tok-n">merge</span><span class="tok-p">(</span><span class="tok-n">aux_channels</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">out1</span><span class="tok-p">);</span>
+
+		<span class="tok-n">frame</span><span class="tok-p">.</span><span class="tok-n">convertTo</span><span class="tok-p">(</span><span class="tok-n">frame_32f</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">);</span>
+		<span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">&lt;</span><span class="tok-mi">10</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
+			<span class="tok-n">filter2D</span><span class="tok-p">(</span><span class="tok-n">frame_32f</span><span class="tok-p">,</span> <span class="tok-n">filtered</span><span class="tok-p">,</span> <span class="tok-n">frame_32f</span><span class="tok-p">.</span><span class="tok-n">depth</span><span class="tok-p">(),</span> <span class="tok-n">kernel</span><span class="tok-p">,</span> <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">),</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+			<span class="tok-n">frame_32f</span> <span class="tok-o">=</span> <span class="tok-n">filtered</span><span class="tok-p">.</span><span class="tok-n">clone</span><span class="tok-p">();</span>
+		<span class="tok-p">}</span>
+		<span class="tok-n">filtered</span><span class="tok-p">.</span><span class="tok-n">convertTo</span><span class="tok-p">(</span><span class="tok-n">out2</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
+
+		<span class="tok-n">split</span><span class="tok-p">(</span><span class="tok-n">out2</span><span class="tok-p">,</span> <span class="tok-n">channels</span><span class="tok-p">);</span>
+		<span class="tok-n">multiply</span><span class="tok-p">(</span><span class="tok-n">c_alpha_mask</span><span class="tok-p">,</span> <span class="tok-n">channels</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-n">aux_channels</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">],</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">255.0</span><span class="tok-p">);</span>
+		<span class="tok-n">multiply</span><span class="tok-p">(</span><span class="tok-n">c_alpha_mask</span><span class="tok-p">,</span> <span class="tok-n">channels</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">],</span> <span class="tok-n">aux_channels</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">],</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">255.0</span><span class="tok-p">);</span>
+		<span class="tok-n">multiply</span><span class="tok-p">(</span><span class="tok-n">c_alpha_mask</span><span class="tok-p">,</span> <span class="tok-n">channels</span><span class="tok-p">[</span><span class="tok-mi">2</span><span class="tok-p">],</span> <span class="tok-n">aux_channels</span><span class="tok-p">[</span><span class="tok-mi">2</span><span class="tok-p">],</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">255.0</span><span class="tok-p">);</span>
+		<span class="tok-n">merge</span><span class="tok-p">(</span><span class="tok-n">aux_channels</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">out2</span><span class="tok-p">);</span>
+
+		<span class="tok-n">addWeighted</span><span class="tok-p">(</span><span class="tok-n">out1</span><span class="tok-p">,</span> <span class="tok-n">alpha</span><span class="tok-p">,</span> <span class="tok-n">out2</span><span class="tok-p">,</span> <span class="tok-mi">1</span> <span class="tok-o">-</span> <span class="tok-n">alpha</span><span class="tok-p">,</span> <span class="tok-mf">0.0</span><span class="tok-p">,</span> <span class="tok-n">tiltshifted</span><span class="tok-p">);</span>
+		<span class="tok-n">addWeighted</span><span class="tok-p">(</span><span class="tok-n">tiltshifted</span><span class="tok-p">,</span> <span class="tok-n">avg</span><span class="tok-p">,</span> <span class="tok-n">tiltshifted</span><span class="tok-p">,</span> <span class="tok-mf">0.0</span><span class="tok-p">,</span> <span class="tok-mf">0.0</span><span class="tok-p">,</span> <span class="tok-n">tiltshifted</span><span class="tok-p">);</span>
+	<span class="tok-p">}</span><span class="tok-k">else</span><span class="tok-p">{}</span>
+<span class="tok-p">}</span>
+
+
+
+<span class="tok-kt">void</span> <span class="tok-nf">save_video</span><span class="tok-p">(</span><span class="tok-kt">void</span><span class="tok-p">){</span>
+	<span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;Video editado salvo&quot;</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argvc</span><span class="tok-p">,</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">){</span>
+
+	<span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;tiltshiftvideo&quot;</span><span class="tok-p">,</span> <span class="tok-n">WINDOW_AUTOSIZE</span><span class="tok-p">);</span>
+
+	<span class="tok-n">kernel</span> <span class="tok-o">=</span> <span class="tok-n">make_kernel</span><span class="tok-p">(</span><span class="tok-n">mascara</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-nb">true</span><span class="tok-p">,</span> <span class="tok-mf">16.0</span><span class="tok-p">);</span>
+
+	<span class="tok-n">sprintf</span><span class="tok-p">(</span><span class="tok-n">trackbar_name</span><span class="tok-p">,</span> <span class="tok-s">&quot;Alpha %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">alpha_slider_max</span><span class="tok-p">);</span>
+	<span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">trackbar_name</span><span class="tok-p">,</span> <span class="tok-s">&quot;tiltshiftvideo&quot;</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">alpha_slider</span><span class="tok-p">,</span> <span class="tok-n">alpha_slider_max</span><span class="tok-p">,</span> <span class="tok-n">video_processing</span><span class="tok-p">);</span>
+
+	<span class="tok-n">sprintf</span><span class="tok-p">(</span><span class="tok-n">trackbar_name</span><span class="tok-p">,</span> <span class="tok-s">&quot;Decay %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">decay_slider_max</span><span class="tok-p">);</span>
+	<span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">trackbar_name</span><span class="tok-p">,</span> <span class="tok-s">&quot;tiltshiftvideo&quot;</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">decay_slider</span><span class="tok-p">,</span> <span class="tok-n">decay_slider_max</span><span class="tok-p">,</span> <span class="tok-n">video_processing</span><span class="tok-p">);</span>
+
+	<span class="tok-n">sprintf</span><span class="tok-p">(</span><span class="tok-n">trackbar_name</span><span class="tok-p">,</span> <span class="tok-s">&quot;Offset %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">offset_slider_max</span><span class="tok-p">);</span>
+	<span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">trackbar_name</span><span class="tok-p">,</span> <span class="tok-s">&quot;tiltshiftvideo&quot;</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">offset_slider</span><span class="tok-p">,</span> <span class="tok-n">offset_slider_max</span><span class="tok-p">,</span> <span class="tok-n">video_processing</span><span class="tok-p">);</span>
+
+	<span class="tok-n">sprintf</span><span class="tok-p">(</span><span class="tok-n">trackbar_name</span><span class="tok-p">,</span> <span class="tok-s">&quot;Average %d&quot;</span><span class="tok-p">,</span> <span class="tok-n">average_slider_max</span><span class="tok-p">);</span>
+	<span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">trackbar_name</span><span class="tok-p">,</span> <span class="tok-s">&quot;tiltshiftvideo&quot;</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">average_slider</span><span class="tok-p">,</span> <span class="tok-n">average_slider_max</span><span class="tok-p">,</span> <span class="tok-n">video_processing</span><span class="tok-p">);</span>
+
+	<span class="tok-k">while</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">){</span>
+		<span class="tok-n">video_processing</span><span class="tok-p">(</span><span class="tok-n">alpha_slider</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+		<span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">frame</span><span class="tok-p">.</span><span class="tok-n">empty</span><span class="tok-p">())</span> <span class="tok-k">break</span><span class="tok-p">;</span>
+		<span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;tiltshiftvideo&quot;</span><span class="tok-p">,</span> <span class="tok-n">tiltshifted</span><span class="tok-p">);</span>
+		<span class="tok-n">key</span> <span class="tok-o">=</span> <span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">50</span><span class="tok-p">);</span>
+		<span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">key</span> <span class="tok-o">==</span> <span class="tok-mi">27</span><span class="tok-p">)</span> <span class="tok-k">break</span><span class="tok-p">;</span>
+	<span class="tok-p">}</span>
+
+	<span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As seguintes linhas</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span class="tok-k">while</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">){</span>
+	<span class="tok-n">video_processing</span><span class="tok-p">(</span><span class="tok-n">alpha_slider</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+	<span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">frame</span><span class="tok-p">.</span><span class="tok-n">empty</span><span class="tok-p">())</span> <span class="tok-k">break</span><span class="tok-p">;</span>
+	<span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;tiltshiftvideo&quot;</span><span class="tok-p">,</span> <span class="tok-n">tiltshifted</span><span class="tok-p">);</span>
+	<span class="tok-n">key</span> <span class="tok-o">=</span> <span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">50</span><span class="tok-p">);</span>
+	<span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">key</span> <span class="tok-o">==</span> <span class="tok-mi">27</span><span class="tok-p">)</span> <span class="tok-k">break</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>são responsáveis pelo processamento em tempo real e por pararem o programa quando os frames do vídeo acabam. O <code>waitKey(50)</code> é para criar um efeito <em>stopmotion</em> na exibição do vídeo na tela.</p>
+</div>
+<div class="paragraph">
+<p>O efeito produzido por <em>tiltshiftvideo.cpp</em> fica interessante com vídeos estilo <em>timelapse</em>. Abaixo, mostro o resultado da aplicação com um <em>timelapse</em> do Rio de Janeiro. O vídeo original pode ser encontrado <a href="https://www.youtube.com/watch?v=SMbqZvCY7XA">aqui</a>. Usei os seguintes valores para os parâmetros: <code>Alpha = 60</code>, <code>Decay = 40</code>, <code>Offset = 200</code> e <code>Average = 180</code>.</p>
+</div>
+<div class="videoblock">
+<div class="title">Resultado de <em>tiltshiftvideo.cpp</em></div>
+<div class="content">
+<video src="./imgs/mp4_tilt.mp4" controls>
+Your browser does not support the video tag.
+</video>
+</div>
 </div>
 </div>
 </div>
@@ -2029,7 +2230,7 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-10-03 02:19:17 -03
+Last updated 2019-10-03 21:14:31 -03
 </div>
 </div>
 <script type="text/x-mathjax-config">
