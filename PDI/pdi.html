@@ -2230,7 +2230,7 @@ Your browser does not support the video tag.
 <div class="sect2">
 <h3 id="_6_filtragem_no_domínio_da_frequência_filtro_homomórfico">6. Filtragem no domínio da frequência: filtro homomórfico</h3>
 <div class="paragraph">
-<p>O funcionamento do filtro homomórfico baseia-se no pressuposto de que a cena está iluminada com transições suaves, e que os objetos presentes na cena apresentam-se com transições mais bruscas. É possível, então, por meio de um filtro passa-altas com não-idealidades, eliminar as componentes de baixa frequência da imagem original, preservando-se, entretanto, as componentes de alta frequência (contornos dos objetos).</p>
+<p>O funcionamento do filtro homomórfico baseia-se no pressuposto de que a cena está iluminada com transições suaves, e que os objetos presentes na cena apresentam-se com transições mais bruscas. É possível, então, por meio de um filtro passa-altas com não-idealidades, eliminar as componentes de baixa frequência (iluminação) da imagem original, preservando-se, entretanto, as componentes de alta frequência (contornos dos objetos, reflectância).</p>
 </div>
 <div class="paragraph">
 <p>O código é apresentado a seguir.</p>
@@ -2328,6 +2328,26 @@ Your browser does not support the video tag.
 </div>
 <div class="title">Figure 25. Documento processado</div>
 </div>
+<div class="paragraph">
+<p>A função <code>on_change</code> é chamada toda vez que alguma trackbar é alterada e recebe os parâmetros passados pela interface, cria o filtro homomórfico, e filtra a DFT do logaritmo da imagem com centro em {P/2, Q/2}, o que é mostrado em</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="py"><span class="tok-n">H</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">gamma_h</span> <span class="tok-o">-</span> <span class="tok-n">gamma_l</span><span class="tok-p">)</span> <span class="tok-o">*</span> <span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-o">-</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">exp</span><span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-n">c</span> <span class="tok-o">*</span> <span class="tok-p">((</span><span class="tok-n">d</span> <span class="tok-o">/</span> <span class="tok-n">d0</span><span class="tok-p">)</span> <span class="tok-o">**</span> <span class="tok-mi">2</span><span class="tok-p">)))</span> <span class="tok-o">+</span> <span class="tok-n">gamma_l</span>
+<span class="tok-n">dft_filt</span> <span class="tok-o">=</span> <span class="tok-n">dft</span> <span class="tok-o">*</span> <span class="tok-n">H</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A DFT filtrada tem centro retornado ao {0, 0} e a aplicação da DFT inversa origina a imagem processada. A normalização do <code>OpenCV</code> é utilizada para possibilitar a exibição da imagem na tela.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="py"><span class="tok-n">dft_filt</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">fft</span><span class="tok-o">.</span><span class="tok-n">ifftshift</span><span class="tok-p">(</span><span class="tok-n">dft_filt</span><span class="tok-p">)</span>
+<span class="tok-n">filtered_image</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">fft</span><span class="tok-o">.</span><span class="tok-n">ifft2</span><span class="tok-p">(</span><span class="tok-n">dft_filt</span><span class="tok-p">)</span>
+<span class="tok-n">final_image</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">exp</span><span class="tok-p">(</span><span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">abs</span><span class="tok-p">(</span><span class="tok-n">filtered_image</span><span class="tok-p">))</span>
+<span class="tok-n">final_image</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">final_image</span><span class="tok-p">,</span> <span class="tok-bp">None</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">NORM_MINMAX</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_7_pontilhismo_com_algoritmo_de_canny">7. Pontilhismo com algoritmo de Canny</h3>
@@ -2385,7 +2405,7 @@ Your browser does not support the video tag.
 <p>A imagem original utilizada foi a Figura 22, mostrada no tópico <a href="#_5_1_imagem_com_tilt_shift">imagem com tilt-shift</a>.</p>
 </div>
 <div class="paragraph">
-<p>A execução foi com <code>python canny.py imagem</code> e o resultado (assumindo-se processamento em ton de cinza) obtido foi</p>
+<p>A execução foi com <code>python canny.py <em>imagem</em></code> e o resultado (assumindo-se processamento em ton de cinza) obtido foi</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -2406,12 +2426,26 @@ Your browser does not support the video tag.
 <div class="ulist">
 <ul>
 <li>
-<p>Threshold inferior: limiar inferior usado na identificação das bordas pelo algoritmo de Canny</p>
+<p>Threshold inferior: limiar inferior usado na identificação das bordas pelo algoritmo de Canny. Quanto menor esse valor, mais bordas serão detectadas pelo algoritmo de Canny.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>O threshold superior é três vezes o inferior, como proposto por Canny</p>
+<p>O threshold superior é três vezes o inferior, como proposto por Canny.</p>
+</div>
+<div class="paragraph">
+<p>Observe que o trecho da função <code>on_change</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="py"><span class="tok-k">for</span> <span class="tok-n">i</span> <span class="tok-ow">in</span> <span class="tok-nb">range</span><span class="tok-p">(</span><span class="tok-n">rows</span><span class="tok-p">):</span>
+    <span class="tok-k">for</span> <span class="tok-n">j</span> <span class="tok-ow">in</span> <span class="tok-nb">range</span><span class="tok-p">(</span><span class="tok-n">cols</span><span class="tok-p">):</span>
+      <span class="tok-k">if</span> <span class="tok-n">edges</span><span class="tok-p">[</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">]</span> <span class="tok-o">==</span> <span class="tok-mi">255</span><span class="tok-p">:</span>
+        <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">circle</span><span class="tok-p">(</span><span class="tok-n">points</span><span class="tok-p">,</span> <span class="tok-p">(</span><span class="tok-n">j</span><span class="tok-p">,</span> <span class="tok-n">i</span><span class="tok-p">),</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">100</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>é o que utiliza o algoritmo de Canny para pintar bolas de raio 1 e tom de cinza 100 no local dos pixels de borda identificados pelo algoritmo. Com isso, o contorno dos objetos são um pouco mais realçados na figura pontilhista. Essa aplicação é relativamente simples, mas apresenta um efeito agradável à imagem.</p>
 </div>
 </div>
 <div class="sect2">
@@ -2470,17 +2504,18 @@ Your browser does not support the video tag.
 </div>
 </div>
 <div class="paragraph">
-<p>Executou-se o <code>kmeans</code> dez vezes, com apenas uma passada (um ajuste), salvando-se as imagens obtidas em cada iteração. Depois, usando as imagens salvas, produziu-se um vídeo, com o qual tornam-se claras as diferenças entre as imagens adquiridas:</p>
+<p>Executou-se o <code>kmeans</code> dez vezes, com apenas uma passada (um ajuste), salvando-se as imagens obtidas em cada iteração. Depois, usando as imagens salvas, produziu-se um gif, com o qual tornam-se claras as diferenças entre as imagens adquiridas:</p>
 </div>
 <div class="videoblock">
+<div class="title">frames do K-means em vídeo</div>
 <div class="content">
-<video src="./imgs/kmeans.gif" controls>
+<video src="./imgs/mp4_kmeans.mp4" controls>
 Your browser does not support the video tag.
 </video>
 </div>
 </div>
 <div class="paragraph">
-<p>A razão das diferenças entre cada imagem é que os centros são iniciados aleatoriamente, e, com apenas uma passada do <code>kmeans</code>, não possível visualizar os centros convergindo para seus valores finais.</p>
+<p>A razão das diferenças entre cada imagem é que os centros são iniciados aleatoriamente, e, com apenas uma passada do <code>kmeans</code>, não possível visualizar os centros convergindo para seus valores finais, de maneira que as imagens ainda se mantém muito díspares.</p>
 </div>
 </div>
 </div>
@@ -2488,7 +2523,7 @@ Your browser does not support the video tag.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-10-23 11:27:22 -03
+Last updated 2019-10-23 13:26:55 -03
 </div>
 </div>
 <script type="text/x-mathjax-config">
