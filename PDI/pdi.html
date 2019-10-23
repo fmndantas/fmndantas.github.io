@@ -500,32 +500,20 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_1_manipulação_de_pixels">1. Manipulação de pixels</a>
+<li><a href="#_parte_1">Parte 1</a>
 <ul class="sectlevel2">
-<li><a href="#_1_1_negativo_de_uma_região">1.1 Negativo de uma região</a></li>
-<li><a href="#_1_2_troca_dos_quadrantes_de_uma_imagem">1.2 Troca dos quadrantes de uma imagem</a></li>
+<li><a href="#_1_manipulação_de_pixels">1. Manipulação de pixels</a></li>
+<li><a href="#_2_rotulação_de_regiões">2. Rotulação de regiões</a></li>
+<li><a href="#_3_manipulação_de_histogramas">3. Manipulação de histogramas</a></li>
+<li><a href="#_4_filtragem_no_domínio_espacial_parte_1">4. Filtragem no domínio espacial, parte 1</a></li>
+<li><a href="#_5_filtragem_no_domínio_espacial_parte_2">5. Filtragem no domínio espacial, parte 2</a></li>
 </ul>
 </li>
-<li><a href="#_2_rotulação_de_regiões">2. Rotulação de regiões</a>
+<li><a href="#_parte_2">Parte 2</a>
 <ul class="sectlevel2">
-<li><a href="#_2_1_contagem_de_bolhas_com_buracos">2.1 Contagem de bolhas com buracos</a></li>
-</ul>
-</li>
-<li><a href="#_3_manipulação_de_histogramas">3. Manipulação de histogramas</a>
-<ul class="sectlevel2">
-<li><a href="#_3_1_equalização_de_imagem">3.1 Equalização de imagem</a></li>
-<li><a href="#_3_2_detecção_de_movimento">3.2 Detecção de movimento</a></li>
-</ul>
-</li>
-<li><a href="#_4_filtragem_no_domínio_espacial_parte_1">4. Filtragem no domínio espacial, parte 1</a>
-<ul class="sectlevel2">
-<li><a href="#_4_1_filtro_laplaciano_do_gaussiano">4.1 Filtro laplaciano do gaussiano</a></li>
-</ul>
-</li>
-<li><a href="#_5_filtragem_no_domínio_espacial_parte_2">5. Filtragem no domínio espacial, parte 2</a>
-<ul class="sectlevel2">
-<li><a href="#_5_1_imagem_com_tilt_shift">5.1 Imagem com tilt-shift</a></li>
-<li><a href="#_5_2_vídeo_com_tilt_shift">5.2 Vídeo com tilt-shift</a></li>
+<li><a href="#_6_filtragem_no_domínio_da_frequência_filtro_homomórfico">6. Filtragem no domínio da frequência: filtro homomórfico</a></li>
+<li><a href="#_7_pontilhismo_com_algoritmo_de_canny">7. Pontilhismo com algoritmo de Canny</a></li>
+<li><a href="#_8_segmentação_com_k_means">8. Segmentação com k-means</a></li>
 </ul>
 </li>
 </ul>
@@ -544,8 +532,13 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="paragraph">
 <p><strong>As implementações mostradas aqui foram testadas e executadas somente em ambiente de desenvolvimento Linux, mas devem funcionar em outros sistemas operacionais com devidas adaptações.</strong></p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_parte_1">Parte 1</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>Após a correta instalação do OpenCV, salve o seguinte código como o arquivo <code>Makefile</code>. Você deverá usar esse arquivo no mesmo diretório que o arquivo <em>.cpp</em> a ser compilado.</p>
+<p>Os exemplos dessa primeira parte foram programados em <code>C++</code>. Após a correta instalação do OpenCV, salve o seguinte código como o arquivo <code>Makefile</code>. Você deverá usar esse arquivo no mesmo diretório que o arquivo <em>.cpp</em> a ser compilado.</p>
 </div>
 <div class="listingblock">
 <div class="title">Makefile</div>
@@ -574,19 +567,16 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="paragraph">
 <p>Se tudo correr como esperado, deve surgir um executável no diretório atual com mesmo nome de <code>exemplo.cpp</code>.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_1_manipulação_de_pixels">1. Manipulação de pixels</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_manipulação_de_pixels">1. Manipulação de pixels</h3>
 <div class="paragraph">
 <p>Normalmente, as imagens que são processadas digitalmente não têm seus pixels diretamente alterados, de modo que os pixels resultantes do processamento são copiados para uma nova imagem, com o intuito de manter-se a imagem original disponível para outros futuros processamentos.</p>
 </div>
 <div class="paragraph">
 <p>Ainda assim, algoritmos que atuam diretamente nos pixels da imagem fornecida podem realizar processamentos úteis, conforme será mostrado nos exemplos a seguir.</p>
 </div>
-<div class="sect2">
-<h3 id="_1_1_negativo_de_uma_região">1.1 Negativo de uma região</h3>
+<div class="sect3">
+<h4 id="_1_1_negativo_de_uma_região">1.1 Negativo de uma região</h4>
 <div class="paragraph">
 <p>O objetivo deste programa é criar uma janela  <em>negativa</em> numa imagem. A dimensão da janela é definida por dois pontos (quatro coordenadas) passados pelo usuário. A seguir, mostro a minha solução e explico a listagem <em>regions.cpp</em>.</p>
 </div>
@@ -701,8 +691,8 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 <div class="title">Figure 2. Resultado de regions</div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_1_2_troca_dos_quadrantes_de_uma_imagem">1.2 Troca dos quadrantes de uma imagem</h3>
+<div class="sect3">
+<h4 id="_1_2_troca_dos_quadrantes_de_uma_imagem">1.2 Troca dos quadrantes de uma imagem</h4>
 <div class="paragraph">
 <p>O objetivo desse programa é simplesmente trocar os quadrantes de uma imagem qualquer.</p>
 </div>
@@ -792,12 +782,10 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_2_rotulação_de_regiões">2. Rotulação de regiões</h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_2_1_contagem_de_bolhas_com_buracos">2.1 Contagem de bolhas com buracos</h3>
+<h3 id="_2_rotulação_de_regiões">2. Rotulação de regiões</h3>
+<div class="sect3">
+<h4 id="_2_1_contagem_de_bolhas_com_buracos">2.1 Contagem de bolhas com buracos</h4>
 <div class="paragraph">
 <p>O objetivo desse algoritmo é a contagem de bolhas de cor branca, numa imagem binária com fundo preto. O <em>plus</em> é que o programa é capaz, também, de contar a quantidades de bolhas com buracos.</p>
 </div>
@@ -998,12 +986,10 @@ biblioteca OpenCV na implementação de algoritmos que lidam com processamento d
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_3_manipulação_de_histogramas">3. Manipulação de histogramas</h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_3_1_equalização_de_imagem">3.1 Equalização de imagem</h3>
+<h3 id="_3_manipulação_de_histogramas">3. Manipulação de histogramas</h3>
+<div class="sect3">
+<h4 id="_3_1_equalização_de_imagem">3.1 Equalização de imagem</h4>
 <div class="paragraph">
 <p>O algoritmo apresentado aqui realiza a equalização do histograma de uma imagem.</p>
 </div>
@@ -1203,8 +1189,8 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 <p>O caso demonstrado pelas Figuras 12 e 13 são os de maior interesse do processo de equalização: cena com tons de cinza relativamente próximos. A equalização, por aumentar o contraste, faz com que os tons da nova imagem tornem-se mais esparsos, evidenciando melhor as características da imagem adquirida.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_3_2_detecção_de_movimento">3.2 Detecção de movimento</h3>
+<div class="sect3">
+<h4 id="_3_2_detecção_de_movimento">3.2 Detecção de movimento</h4>
 <div class="paragraph">
 <p>O programa de detetecção de movimento funciona, basicamente, comparando o histograma do frame atual com o histograma armazenado do frame imediatamente passado. A implementação é mostrada a seguir:</p>
 </div>
@@ -1357,10 +1343,8 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_4_filtragem_no_domínio_espacial_parte_1">4. Filtragem no domínio espacial, parte 1</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_4_filtragem_no_domínio_espacial_parte_1">4. Filtragem no domínio espacial, parte 1</h3>
 <div class="paragraph">
 <p>Realizar uma filtragem no domínio espacial significa aplicar transformações nos pixels de uma imagem com base em um <em>kernel</em> e copiar o resultado das transformações para uma outra imagem. O <em>kernel</em>, ou máscara, é uma matriz de dimensões \(n\times n\), com \(n\) preferencialmente ímpar e menor que as dimensões da imagem sendo tratada. Os coeficientes do <em>kernel</em> determinam o tipo de operação que a filtragem realiza na imagem.</p>
 </div>
@@ -1373,8 +1357,8 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 <div class="paragraph">
 <p><span class="image"><img src="./imgs/spatial.jpg" alt="spatial"></span></p>
 </div>
-<div class="sect2">
-<h3 id="_4_1_filtro_laplaciano_do_gaussiano">4.1 Filtro laplaciano do gaussiano</h3>
+<div class="sect3">
+<h4 id="_4_1_filtro_laplaciano_do_gaussiano">4.1 Filtro laplaciano do gaussiano</h4>
 <div class="paragraph">
 <p>A listagem <em>laplgauss.cpp</em> apresenta uma interface para experimentação em tempo real de alguns dos filtros mais comuns para o processamento de imagens: média, gaussiano, sobel vertical, sobel horizontal, laplaciano e laplaciano do gaussiano.</p>
 </div>
@@ -1718,12 +1702,10 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_5_filtragem_no_domínio_espacial_parte_2">5. Filtragem no domínio espacial, parte 2</h2>
-<div class="sectionbody">
 <div class="sect2">
-<h3 id="_5_1_imagem_com_tilt_shift">5.1 Imagem com tilt-shift</h3>
+<h3 id="_5_filtragem_no_domínio_espacial_parte_2">5. Filtragem no domínio espacial, parte 2</h3>
+<div class="sect3">
+<h4 id="_5_1_imagem_com_tilt_shift">5.1 Imagem com tilt-shift</h4>
 <div class="paragraph">
 <p>As imagens criadas com a técnica <em>tilt-shift</em> são resultado da soma de duas outras imagens formadas a partir de uma mesma imagem-fonte: uma que apresenta somente as bordas desfocadas e outra que apresenta somente o centro em foco. A idéia é criar um efeito artístico que dá mais atenção à alguma região específica da imagem.</p>
 </div>
@@ -2051,8 +2033,8 @@ Mat histImageCopy(histdisplay_height, histdisplay_width, CV_8U, Scalar(0, 0, 0))
 <p>Depois do ajuste dos parâmetros, pode-se salvar a imagem apertando a tecla <code>s</code>. A figura é salva na mesma pasta de <code>tiltshift.cpp</code> com o nome <code>image-edited.jpg</code>.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_5_2_vídeo_com_tilt_shift">5.2 Vídeo com tilt-shift</h3>
+<div class="sect3">
+<h4 id="_5_2_vídeo_com_tilt_shift">5.2 Vídeo com tilt-shift</h4>
 <div class="paragraph">
 <p>O programa <em>tiltshiftvideo.cpp</em> funciona de maneira relativamente similar à <em>tiltshift.cpp</em>, permitindo, no entanto, que o usuário interaja com o vídeo em tempo real, mudando os parâmetros <code>Decay</code>, <code>Offset</code>, <code>Average</code> e <code>Height</code>, conforme já explicado na seção <a href="#_5_1_imagem_com_tilt_shift">5.1</a>.</p>
 </div>
@@ -2229,9 +2211,284 @@ Your browser does not support the video tag.
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_parte_2">Parte 2</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Os exemplos dessa segunda parte foram programados em <code>python</code>: deve-se instalar o pacote <code>OpenCV</code> para o <code>python</code>. A execução dos exemplos se dá com <code>python example.py [argumentos, [opcionais]]</code>, em que</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>example.py</code> é o <em>script</em> exemplo</p>
+</li>
+<li>
+<p><code>[argumentos, [opcionais]]</code> é algum parâmetro ou caminho de arquivo eventualmente passado</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_6_filtragem_no_domínio_da_frequência_filtro_homomórfico">6. Filtragem no domínio da frequência: filtro homomórfico</h3>
+<div class="paragraph">
+<p>O funcionamento do filtro homomórfico baseia-se no pressuposto de que a cena está iluminada com transições suaves, e que os objetos presentes na cena apresentam-se com transições mais bruscas. É possível, então, por meio de um filtro passa-altas com não-idealidades, eliminar as componentes de baixa frequência da imagem original, preservando-se, entretanto, as componentes de alta frequência (contornos dos objetos).</p>
+</div>
+<div class="paragraph">
+<p>O código é apresentado a seguir.</p>
+</div>
+<div class="paragraph">
+<p>A execução deve ser feita com <code>python homomorfico.py <em>imagem</em></code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">homomorfico.py</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="py"><span class="tok-kn">import</span> <span class="tok-nn">cv2</span>
+<span class="tok-kn">import</span> <span class="tok-nn">sys</span>
+<span class="tok-kn">import</span> <span class="tok-nn">numpy</span> <span class="tok-kn">as</span> <span class="tok-nn">np</span>
+
+
+<span class="tok-k">def</span> <span class="tok-nf">on_change</span><span class="tok-p">(</span><span class="tok-n">value</span><span class="tok-p">):</span>
+  <span class="tok-n">gamma_h</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">getTrackbarPos</span><span class="tok-p">(</span><span class="tok-n">gammah_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">)</span> <span class="tok-o">/</span> <span class="tok-mi">100</span>
+  <span class="tok-n">gamma_l</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">getTrackbarPos</span><span class="tok-p">(</span><span class="tok-n">gammal_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">)</span> <span class="tok-o">/</span> <span class="tok-mi">100</span>
+  <span class="tok-n">d0</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">getTrackbarPos</span><span class="tok-p">(</span><span class="tok-n">d0_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">)</span>
+  <span class="tok-n">c</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">getTrackbarPos</span><span class="tok-p">(</span><span class="tok-n">c_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">)</span>
+  <span class="tok-n">H</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">gamma_h</span> <span class="tok-o">-</span> <span class="tok-n">gamma_l</span><span class="tok-p">)</span> <span class="tok-o">*</span> <span class="tok-p">(</span><span class="tok-mi">1</span> <span class="tok-o">-</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">exp</span><span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-n">c</span> <span class="tok-o">*</span> <span class="tok-p">((</span><span class="tok-n">d</span> <span class="tok-o">/</span> <span class="tok-n">d0</span><span class="tok-p">)</span> <span class="tok-o">**</span> <span class="tok-mi">2</span><span class="tok-p">)))</span> <span class="tok-o">+</span> <span class="tok-n">gamma_l</span>
+  <span class="tok-n">dft_filt</span> <span class="tok-o">=</span> <span class="tok-n">dft</span> <span class="tok-o">*</span> <span class="tok-n">H</span>
+  <span class="tok-n">dft_filt</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">fft</span><span class="tok-o">.</span><span class="tok-n">ifftshift</span><span class="tok-p">(</span><span class="tok-n">dft_filt</span><span class="tok-p">)</span>
+  <span class="tok-n">filtered_image</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">fft</span><span class="tok-o">.</span><span class="tok-n">ifft2</span><span class="tok-p">(</span><span class="tok-n">dft_filt</span><span class="tok-p">)</span>
+  <span class="tok-n">final_image</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">exp</span><span class="tok-p">(</span><span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">abs</span><span class="tok-p">(</span><span class="tok-n">filtered_image</span><span class="tok-p">))</span>
+  <span class="tok-n">final_image</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">final_image</span><span class="tok-p">,</span> <span class="tok-bp">None</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">NORM_MINMAX</span><span class="tok-p">)</span>
+  <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-n">final_image</span><span class="tok-p">)</span>
+
+
+<span class="tok-n">title</span> <span class="tok-o">=</span> <span class="tok-s1">&#39;filtro homomorfico&#39;</span>
+<span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">WINDOW_AUTOSIZE</span><span class="tok-p">)</span>
+
+<span class="tok-n">gammah_max</span> <span class="tok-o">=</span> <span class="tok-mi">100</span>
+<span class="tok-n">gammal_max</span> <span class="tok-o">=</span> <span class="tok-mi">100</span>
+<span class="tok-n">c_max</span> <span class="tok-o">=</span> <span class="tok-mi">100</span>
+<span class="tok-n">d0_max</span> <span class="tok-o">=</span> <span class="tok-mi">100</span>
+
+<span class="tok-n">gammah_name</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;gammah % = &quot;</span>
+<span class="tok-n">gammal_name</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;gammal % = &quot;</span>
+<span class="tok-n">c_name</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;c = &quot;</span>
+<span class="tok-n">d0_name</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;d0 = &quot;</span>
+
+<span class="tok-n">image</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">imread</span><span class="tok-p">(</span><span class="tok-n">sys</span><span class="tok-o">.</span><span class="tok-n">argv</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">],</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">IMREAD_GRAYSCALE</span><span class="tok-p">)</span>
+<span class="tok-n">modified_image</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">log</span><span class="tok-p">(</span><span class="tok-n">image</span> <span class="tok-o">+</span> <span class="tok-mf">1.</span><span class="tok-p">)</span>
+<span class="tok-n">dft</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">fft</span><span class="tok-o">.</span><span class="tok-n">fft2</span><span class="tok-p">(</span><span class="tok-n">modified_image</span><span class="tok-p">)</span>
+<span class="tok-n">dft</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">fft</span><span class="tok-o">.</span><span class="tok-n">fftshift</span><span class="tok-p">(</span><span class="tok-n">dft</span><span class="tok-p">)</span>
+
+<span class="tok-n">P</span><span class="tok-p">,</span> <span class="tok-n">Q</span> <span class="tok-o">=</span> <span class="tok-n">dft</span><span class="tok-o">.</span><span class="tok-n">shape</span><span class="tok-p">[:</span><span class="tok-mi">2</span><span class="tok-p">]</span>
+<span class="tok-n">v</span><span class="tok-p">,</span> <span class="tok-n">u</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">meshgrid</span><span class="tok-p">(</span><span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">arange</span><span class="tok-p">(</span><span class="tok-n">Q</span><span class="tok-p">),</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">arange</span><span class="tok-p">(</span><span class="tok-n">P</span><span class="tok-p">))</span>
+<span class="tok-n">d</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">hypot</span><span class="tok-p">(</span><span class="tok-n">u</span> <span class="tok-o">-</span> <span class="tok-n">P</span> <span class="tok-o">/</span> <span class="tok-mi">2</span><span class="tok-p">,</span> <span class="tok-n">v</span> <span class="tok-o">-</span> <span class="tok-n">Q</span> <span class="tok-o">/</span> <span class="tok-mi">2</span><span class="tok-p">)</span>
+
+<span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">gammah_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-mi">50</span><span class="tok-p">,</span> <span class="tok-n">gammah_max</span><span class="tok-p">,</span> <span class="tok-n">on_change</span><span class="tok-p">)</span>
+<span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">gammal_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-mi">50</span><span class="tok-p">,</span> <span class="tok-n">gammal_max</span><span class="tok-p">,</span> <span class="tok-n">on_change</span><span class="tok-p">)</span>
+<span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">c_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-mi">50</span><span class="tok-p">,</span> <span class="tok-n">c_max</span><span class="tok-p">,</span> <span class="tok-n">on_change</span><span class="tok-p">)</span>
+<span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">d0_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-mi">50</span><span class="tok-p">,</span> <span class="tok-n">d0_max</span><span class="tok-p">,</span> <span class="tok-n">on_change</span><span class="tok-p">)</span>
+
+<span class="tok-n">on_change</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">)</span>
+<span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A interface do programa se abrirá, como em</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/homo_interface.png" alt="homo interface">
+</div>
+<div class="title">Figure 24. Documento original</div>
+</div>
+<div class="paragraph">
+<p>O usuário pode, então, controlar os seguintes parâmetros na interface</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>gammah</code>: ganho da região de passagem do filtro</p>
+</li>
+<li>
+<p><code>gammal</code>: ganho da região de rejeição do filtro</p>
+</li>
+<li>
+<p><code>c</code>: fator de decaimento do filtro</p>
+</li>
+<li>
+<p><code>d0</code>: quanto maior, mais a região de transição entre <code>gammah</code> e <code>gammal</code> é maior</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Após algum ajuste, a imagem mostrada acima foi obtida com contraste melhorado e texto mais visível:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/homo_exemplo.png" alt="homo exemplo">
+</div>
+<div class="title">Figure 25. Documento processado</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_7_pontilhismo_com_algoritmo_de_canny">7. Pontilhismo com algoritmo de Canny</h3>
+<div class="paragraph">
+<p>O algoritmo de Canny serve, principalmente, para identificação de bordas em uma dada imagem. Aqui, ele foi utilizado para aguçar os contornos de objetos em uma imagem pontilhista criada artificialmente. Segue o algoritmo:</p>
+</div>
+<div class="listingblock">
+<div class="title">canny.py</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="py"><span class="tok-kn">import</span> <span class="tok-nn">cv2</span>
+<span class="tok-kn">import</span> <span class="tok-nn">numpy</span> <span class="tok-kn">as</span> <span class="tok-nn">np</span>
+<span class="tok-kn">import</span> <span class="tok-nn">sys</span>
+
+
+<span class="tok-k">def</span> <span class="tok-nf">on_change</span><span class="tok-p">(</span><span class="tok-n">value</span><span class="tok-p">):</span>
+  <span class="tok-n">slide</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">getTrackbarPos</span><span class="tok-p">(</span><span class="tok-n">slide_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">)</span>
+  <span class="tok-n">edges</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">Canny</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">slide</span><span class="tok-p">,</span> <span class="tok-mi">3</span> <span class="tok-o">*</span> <span class="tok-n">slide</span><span class="tok-p">)</span>
+  <span class="tok-n">points</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">copy</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">)</span>
+  <span class="tok-n">points</span><span class="tok-p">[</span><span class="tok-o">...</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-mi">220</span>
+  <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">random</span><span class="tok-o">.</span><span class="tok-n">shuffle</span><span class="tok-p">(</span><span class="tok-nb">xrange</span><span class="tok-p">)</span>
+  <span class="tok-k">for</span> <span class="tok-n">i</span> <span class="tok-ow">in</span> <span class="tok-nb">xrange</span><span class="tok-p">:</span>
+    <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">random</span><span class="tok-o">.</span><span class="tok-n">shuffle</span><span class="tok-p">(</span><span class="tok-n">yrange</span><span class="tok-p">)</span>
+    <span class="tok-k">for</span> <span class="tok-n">j</span> <span class="tok-ow">in</span> <span class="tok-n">yrange</span><span class="tok-p">:</span>
+      <span class="tok-n">displacement</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">random</span><span class="tok-o">.</span><span class="tok-n">randint</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">2</span><span class="tok-o">*</span><span class="tok-n">jitter</span><span class="tok-p">)</span> <span class="tok-o">-</span> <span class="tok-n">jitter</span> <span class="tok-o">+</span> <span class="tok-mi">1</span>
+      <span class="tok-n">i</span> <span class="tok-o">=</span> <span class="tok-nb">int</span><span class="tok-p">(</span><span class="tok-n">i</span> <span class="tok-o">+</span> <span class="tok-n">displacement</span> <span class="tok-k">if</span> <span class="tok-n">i</span> <span class="tok-o">+</span> <span class="tok-n">displacement</span> <span class="tok-o">&lt;</span> <span class="tok-n">rows</span> <span class="tok-k">else</span> <span class="tok-n">rows</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">)</span>
+      <span class="tok-n">j</span> <span class="tok-o">=</span> <span class="tok-nb">int</span><span class="tok-p">(</span><span class="tok-n">j</span> <span class="tok-o">+</span> <span class="tok-n">displacement</span> <span class="tok-k">if</span> <span class="tok-n">j</span> <span class="tok-o">+</span> <span class="tok-n">displacement</span> <span class="tok-o">&lt;</span> <span class="tok-n">cols</span> <span class="tok-k">else</span> <span class="tok-n">cols</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">)</span>
+      <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">circle</span><span class="tok-p">(</span><span class="tok-n">points</span><span class="tok-p">,</span> <span class="tok-p">(</span><span class="tok-n">j</span><span class="tok-p">,</span> <span class="tok-n">i</span><span class="tok-p">),</span> <span class="tok-n">radius</span><span class="tok-p">,</span> <span class="tok-nb">int</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">[</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">]),</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">)</span>
+  <span class="tok-k">for</span> <span class="tok-n">i</span> <span class="tok-ow">in</span> <span class="tok-nb">range</span><span class="tok-p">(</span><span class="tok-n">rows</span><span class="tok-p">):</span>
+    <span class="tok-k">for</span> <span class="tok-n">j</span> <span class="tok-ow">in</span> <span class="tok-nb">range</span><span class="tok-p">(</span><span class="tok-n">cols</span><span class="tok-p">):</span>
+      <span class="tok-k">if</span> <span class="tok-n">edges</span><span class="tok-p">[</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">j</span><span class="tok-p">]</span> <span class="tok-o">==</span> <span class="tok-mi">255</span><span class="tok-p">:</span>
+        <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">circle</span><span class="tok-p">(</span><span class="tok-n">points</span><span class="tok-p">,</span> <span class="tok-p">(</span><span class="tok-n">j</span><span class="tok-p">,</span> <span class="tok-n">i</span><span class="tok-p">),</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">100</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">)</span>
+  <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-n">points</span><span class="tok-p">)</span>
+
+
+<span class="tok-k">if</span> <span class="tok-vm">__name__</span> <span class="tok-o">==</span> <span class="tok-s1">&#39;__main__&#39;</span><span class="tok-p">:</span>
+  <span class="tok-n">title</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;Pontilhismo com Canny&quot;</span>
+  <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">WINDOW_AUTOSIZE</span><span class="tok-p">)</span>
+  <span class="tok-n">image</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">imread</span><span class="tok-p">(</span><span class="tok-n">sys</span><span class="tok-o">.</span><span class="tok-n">argv</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">],</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">IMREAD_GRAYSCALE</span><span class="tok-p">)</span>
+  <span class="tok-n">cols</span><span class="tok-p">,</span> <span class="tok-n">rows</span> <span class="tok-o">=</span> <span class="tok-n">image</span><span class="tok-o">.</span><span class="tok-n">shape</span>
+
+  <span class="tok-n">step</span><span class="tok-p">,</span> <span class="tok-n">jitter</span><span class="tok-p">,</span> <span class="tok-n">radius</span> <span class="tok-o">=</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span>
+  <span class="tok-nb">xrange</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">arange</span><span class="tok-p">(</span><span class="tok-n">rows</span><span class="tok-o">/</span><span class="tok-n">step</span><span class="tok-p">)</span> <span class="tok-o">*</span> <span class="tok-n">step</span> <span class="tok-o">+</span> <span class="tok-n">step</span><span class="tok-o">/</span><span class="tok-mi">2</span>
+  <span class="tok-n">yrange</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">arange</span><span class="tok-p">(</span><span class="tok-n">cols</span><span class="tok-o">/</span><span class="tok-n">step</span><span class="tok-p">)</span> <span class="tok-o">*</span> <span class="tok-n">step</span> <span class="tok-o">+</span> <span class="tok-n">step</span><span class="tok-o">/</span><span class="tok-mi">2</span>
+
+  <span class="tok-n">slide_name</span> <span class="tok-o">=</span> <span class="tok-s2">&quot;Threshold inferior&quot;</span>
+  <span class="tok-n">slider_max</span> <span class="tok-o">=</span> <span class="tok-mi">200</span>
+
+  <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">createTrackbar</span><span class="tok-p">(</span><span class="tok-n">slide_name</span><span class="tok-p">,</span> <span class="tok-n">title</span><span class="tok-p">,</span> <span class="tok-mi">197</span><span class="tok-p">,</span> <span class="tok-n">slider_max</span><span class="tok-p">,</span> <span class="tok-n">on_change</span><span class="tok-p">)</span>
+
+  <span class="tok-n">on_change</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">)</span>
+  <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A imagem original utilizada foi a Figura 22, mostrada no tópico <a href="#_5_1_imagem_com_tilt_shift">imagem com tilt-shift</a>.</p>
+</div>
+<div class="paragraph">
+<p>A execução foi com <code>python canny.py imagem</code> e o resultado (assumindo-se processamento em ton de cinza) obtido foi</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/canny_final.png" alt="canny final">
+</div>
+</div>
+<div class="paragraph">
+<p>A execução do <em>script</em> abre a seguinte interface:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./imgs/canny_interface.png" alt="canny interface">
+</div>
+</div>
+<div class="paragraph">
+<p>em que</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Threshold inferior: limiar inferior usado na identificação das bordas pelo algoritmo de Canny</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>O threshold superior é três vezes o inferior, como proposto por Canny</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_8_segmentação_com_k_means">8. Segmentação com k-means</h3>
+<div class="paragraph">
+<p>O algoritmo <code>k-means</code> classifica os pixels de uma dada imagem de acordo com centros que são progressivamente ajustados pelo próprio algoritmo.</p>
+</div>
+<div class="listingblock">
+<div class="title">kmeans.py</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="py"><span class="tok-kn">import</span> <span class="tok-nn">glob</span>
+<span class="tok-kn">import</span> <span class="tok-nn">imageio</span>
+<span class="tok-kn">import</span> <span class="tok-nn">cv2</span>
+<span class="tok-kn">import</span> <span class="tok-nn">numpy</span> <span class="tok-kn">as</span> <span class="tok-nn">np</span>
+<span class="tok-kn">import</span> <span class="tok-nn">sys</span>
+<span class="tok-kn">import</span> <span class="tok-nn">os</span>
+
+<span class="tok-n">n_clusters</span> <span class="tok-o">=</span> <span class="tok-mi">8</span>
+<span class="tok-n">n_rodadas</span> <span class="tok-o">=</span> <span class="tok-mi">1</span>
+
+<span class="tok-n">image</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">imread</span><span class="tok-p">(</span><span class="tok-s2">&quot;image.jpg&quot;</span><span class="tok-p">,</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">IMREAD_COLOR</span><span class="tok-p">)</span>
+<span class="tok-n">rows</span><span class="tok-p">,</span> <span class="tok-n">cols</span> <span class="tok-o">=</span> <span class="tok-n">image</span><span class="tok-o">.</span><span class="tok-n">shape</span><span class="tok-p">[:</span><span class="tok-mi">2</span><span class="tok-p">]</span>
+
+<span class="tok-n">z</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">float32</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-o">.</span><span class="tok-n">reshape</span><span class="tok-p">((</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">)))</span>
+
+<span class="tok-n">criteria</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">TERM_CRITERIA_EPS</span> <span class="tok-o">+</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">TERM_CRITERIA_MAX_ITER</span><span class="tok-p">,</span> <span class="tok-mi">10000</span><span class="tok-p">,</span> <span class="tok-mf">1e-4</span><span class="tok-p">)</span>
+<span class="tok-n">flags</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">KMEANS_RANDOM_CENTERS</span>
+
+<span class="tok-n">images</span> <span class="tok-o">=</span> <span class="tok-p">[]</span>
+
+<span class="tok-k">for</span> <span class="tok-n">i</span> <span class="tok-ow">in</span> <span class="tok-nb">range</span><span class="tok-p">(</span><span class="tok-mi">10</span><span class="tok-p">):</span>
+  <span class="tok-n">_</span><span class="tok-p">,</span> <span class="tok-n">label</span><span class="tok-p">,</span> <span class="tok-n">centers</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">kmeans</span><span class="tok-p">(</span><span class="tok-n">z</span><span class="tok-p">,</span> <span class="tok-n">n_clusters</span><span class="tok-p">,</span> <span class="tok-bp">None</span><span class="tok-p">,</span> <span class="tok-n">criteria</span><span class="tok-p">,</span> <span class="tok-n">n_rodadas</span><span class="tok-p">,</span> <span class="tok-n">flags</span><span class="tok-p">)</span>
+  <span class="tok-n">centers</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">uint8</span><span class="tok-p">(</span><span class="tok-n">centers</span><span class="tok-p">)</span>
+  <span class="tok-n">restored</span> <span class="tok-o">=</span> <span class="tok-n">centers</span><span class="tok-p">[</span><span class="tok-n">label</span><span class="tok-o">.</span><span class="tok-n">flatten</span><span class="tok-p">()]</span><span class="tok-o">.</span><span class="tok-n">reshape</span><span class="tok-p">((</span><span class="tok-n">image</span><span class="tok-o">.</span><span class="tok-n">shape</span><span class="tok-p">))</span>
+  <span class="tok-n">path</span> <span class="tok-o">=</span> <span class="tok-n">f</span><span class="tok-s2">&quot;tmp-{i}.jpg&quot;</span>
+  <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">imwrite</span><span class="tok-p">(</span><span class="tok-n">path</span><span class="tok-p">,</span> <span class="tok-n">restored</span><span class="tok-p">)</span>
+  <span class="tok-n">images</span><span class="tok-o">.</span><span class="tok-n">append</span><span class="tok-p">(</span><span class="tok-n">imageio</span><span class="tok-o">.</span><span class="tok-n">imread</span><span class="tok-p">(</span><span class="tok-n">path</span><span class="tok-p">))</span>
+  <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">destroyAllWindows</span><span class="tok-p">()</span>
+
+<span class="tok-n">imageio</span><span class="tok-o">.</span><span class="tok-n">mimsave</span><span class="tok-p">(</span><span class="tok-s1">&#39;./kmeans.gif&#39;</span><span class="tok-p">,</span> <span class="tok-n">images</span><span class="tok-p">)</span>
+
+<span class="tok-n">tmp</span> <span class="tok-o">=</span> <span class="tok-n">glob</span><span class="tok-o">.</span><span class="tok-n">glob</span><span class="tok-p">(</span><span class="tok-s1">&#39;tmp*&#39;</span><span class="tok-p">)</span>
+<span class="tok-k">for</span> <span class="tok-n">path</span> <span class="tok-ow">in</span> <span class="tok-n">tmp</span><span class="tok-p">:</span>
+  <span class="tok-n">os</span><span class="tok-o">.</span><span class="tok-n">remove</span><span class="tok-p">(</span><span class="tok-n">path</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>No <em>script</em> acima, a quantidade de centros (classes) é determinada pela variável <code>n_clusters</code>.</p>
+</div>
+<div class="paragraph">
+<p>Os centros foram iniciados aleatoriamente com</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="py"><span class="tok-n">flags</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">KMEANS_RANDOM_CENTERS</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Executou-se o <code>kmeans</code> dez vezes, com apenas uma passada (um ajuste), salvando-se as imagens obtidas em cada iteração. Depois, usando as imagens salvas, produziu-se um vídeo, com o qual tornam-se claras as diferenças entre as imagens adquiridas:</p>
+</div>
+<div class="videoblock">
+<div class="content">
+<video src="./imgs/kmeans.gif" controls>
+Your browser does not support the video tag.
+</video>
+</div>
+</div>
+<div class="paragraph">
+<p>A razão das diferenças entre cada imagem é que os centros são iniciados aleatoriamente, e, com apenas uma passada do <code>kmeans</code>, não possível visualizar os centros convergindo para seus valores finais.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-10-04 17:31:08 -03
+Last updated 2019-10-23 11:27:22 -03
 </div>
 </div>
 <script type="text/x-mathjax-config">
