@@ -2215,7 +2215,10 @@ Your browser does not support the video tag.
 <h2 id="_parte_2">Parte 2</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Os exemplos dessa segunda parte foram programados em <code>python</code>: deve-se instalar o pacote <code>OpenCV</code> para o <code>python</code>. A execução dos exemplos se dá com <code>python example.py [argumentos, [opcionais]]</code>, em que</p>
+<p>Os exemplos dessa segunda parte foram programados em <code>python</code>. <a href="https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html">Aqui</a> você encontrará um dos vários tutoriais disponíveis para instalação da biblioteca <code>OpenCV</code> para a linguagem <code>python</code>.</p>
+</div>
+<div class="paragraph">
+<p>A execução dos exemplos se dá com <code>python example.py [argumentos, [opcionais]]</code>, em que</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2230,10 +2233,10 @@ Your browser does not support the video tag.
 <div class="sect2">
 <h3 id="_6_filtragem_no_domínio_da_frequência_filtro_homomórfico">6. Filtragem no domínio da frequência: filtro homomórfico</h3>
 <div class="paragraph">
-<p>O funcionamento do filtro homomórfico baseia-se no pressuposto de que a cena está iluminada com transições suaves, e que os objetos presentes na cena apresentam-se com transições mais bruscas. É possível, então, por meio de um filtro passa-altas com não-idealidades, eliminar as componentes de baixa frequência (iluminação) da imagem original, preservando-se, entretanto, as componentes de alta frequência (contornos dos objetos, reflectância).</p>
+<p>O funcionamento do filtro homomórfico baseia-se no pressuposto de que a cena está iluminada com transições suaves, e que os objetos presentes na cena apresentam-se com transições mais bruscas. É possível, então, por meio de um filtro passa-altas com não-idealidades, atenuar as componentes de baixa frequência (iluminação) da imagem original, preservando-se, entretanto, as componentes de alta frequência (contornos dos objetos, reflectância). O efeito que se obtém é, portanto, o melhoramento do contraste geral da cena e o aumento da visibilidade dos objetos.</p>
 </div>
 <div class="paragraph">
-<p>O código é apresentado a seguir.</p>
+<p>O código do filtro homomórfico é apresentado a seguir.</p>
 </div>
 <div class="paragraph">
 <p>A execução deve ser feita com <code>python homomorfico.py <em>imagem</em></code>.</p>
@@ -2301,7 +2304,7 @@ Your browser does not support the video tag.
 <div class="title">Figure 24. Documento original</div>
 </div>
 <div class="paragraph">
-<p>O usuário pode, então, controlar os seguintes parâmetros na interface</p>
+<p>O usuário pode, então, controlar os seguintes parâmetros:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2347,6 +2350,9 @@ Your browser does not support the video tag.
 <span class="tok-n">final_image</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">exp</span><span class="tok-p">(</span><span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">abs</span><span class="tok-p">(</span><span class="tok-n">filtered_image</span><span class="tok-p">))</span>
 <span class="tok-n">final_image</span> <span class="tok-o">=</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">final_image</span><span class="tok-p">,</span> <span class="tok-bp">None</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">cv2</span><span class="tok-o">.</span><span class="tok-n">NORM_MINMAX</span><span class="tok-p">)</span></code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>Para manipulação da imagem no domínio da frequência, foram utilizadas as convenientes funções do <code>numpy.fft</code> (<em>numeric python</em>), em vez das funções do <code>OpenCV</code>, com mesmo resultado final.</p>
 </div>
 </div>
 <div class="sect2">
@@ -2426,7 +2432,7 @@ Your browser does not support the video tag.
 <div class="ulist">
 <ul>
 <li>
-<p>Threshold inferior: limiar inferior usado na identificação das bordas pelo algoritmo de Canny. Quanto menor esse valor, mais bordas serão detectadas pelo algoritmo de Canny.</p>
+<p>Threshold inferior: limiar inferior usado na identificação das bordas pelo algoritmo de Canny. Quanto menor esse valor, mais bordas serão detectadas.</p>
 </li>
 </ul>
 </div>
@@ -2434,7 +2440,20 @@ Your browser does not support the video tag.
 <p>O threshold superior é três vezes o inferior, como proposto por Canny.</p>
 </div>
 <div class="paragraph">
-<p>Observe que o trecho da função <code>on_change</code></p>
+<p>A primeira etapa executada pelo programa é a criação da imagem pontilhista. Os vetores <code>xrange</code> e <code>yrange</code> armazenam algumas coordenadas que serão usadas para acessar o tom de cinza da imagem original. Esses vetores são modificados pela função <code>on_change</code>, sendo embaralhados pela função <code>shuffle</code>. Tal embaralhamento é necessário para criar um efeito de aleatoriedade dos pontos obtidos, em conjunto com as linhas</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="py"><span class="tok-n">displacement</span> <span class="tok-o">=</span> <span class="tok-n">np</span><span class="tok-o">.</span><span class="tok-n">random</span><span class="tok-o">.</span><span class="tok-n">randint</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">2</span><span class="tok-o">*</span><span class="tok-n">jitter</span><span class="tok-p">)</span> <span class="tok-o">-</span> <span class="tok-n">jitter</span> <span class="tok-o">+</span> <span class="tok-mi">1</span>
+<span class="tok-n">i</span> <span class="tok-o">=</span> <span class="tok-nb">int</span><span class="tok-p">(</span><span class="tok-n">i</span> <span class="tok-o">+</span> <span class="tok-n">displacement</span> <span class="tok-k">if</span> <span class="tok-n">i</span> <span class="tok-o">+</span> <span class="tok-n">displacement</span> <span class="tok-o">&lt;</span> <span class="tok-n">rows</span> <span class="tok-k">else</span> <span class="tok-n">rows</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">)</span>
+<span class="tok-n">j</span> <span class="tok-o">=</span> <span class="tok-nb">int</span><span class="tok-p">(</span><span class="tok-n">j</span> <span class="tok-o">+</span> <span class="tok-n">displacement</span> <span class="tok-k">if</span> <span class="tok-n">j</span> <span class="tok-o">+</span> <span class="tok-n">displacement</span> <span class="tok-o">&lt;</span> <span class="tok-n">cols</span> <span class="tok-k">else</span> <span class="tok-n">cols</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>em que <code>displacement</code> é um deslocamento aleatório, mas pequeno, dos centros das bolas desenhadas pela linha <code>cv2.circle(points, (j, i), radius, int(image[i, j]), -1)</code>. É justamente esse deslocamento que cria sobreposições das bolas, dando o efeito artístico do pontilhismo.</p>
+</div>
+<div class="paragraph">
+<p>Em seguida, o trecho da função <code>on_change</code></p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2445,13 +2464,13 @@ Your browser does not support the video tag.
 </div>
 </div>
 <div class="paragraph">
-<p>é o que utiliza o algoritmo de Canny para pintar bolas de raio 1 e tom de cinza 100 no local dos pixels de borda identificados pelo algoritmo. Com isso, o contorno dos objetos são um pouco mais realçados na figura pontilhista. Essa aplicação é relativamente simples, mas apresenta um efeito agradável à imagem.</p>
+<p>é o que utiliza o algoritmo de Canny para pintar bolas de raio 1 e tom de cinza 100 no local dos pixels de borda identificados pelo algoritmo. Com isso, o contorno dos objetos são um pouco mais realçados na imagem processada. A utilização de Canny, aqui, é relativamente simples, mas apresenta um efeito agradável à imagem.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_8_segmentação_com_k_means">8. Segmentação com k-means</h3>
 <div class="paragraph">
-<p>O algoritmo <code>k-means</code> classifica os pixels de uma dada imagem de acordo com centros que são progressivamente ajustados pelo próprio algoritmo.</p>
+<p>O algoritmo <code>k-means</code> classifica os pixels de uma dada imagem de acordo com centros (classes), que são progressivamente ajustados pelo próprio algoritmo.</p>
 </div>
 <div class="listingblock">
 <div class="title">kmeans.py</div>
@@ -2515,7 +2534,7 @@ Your browser does not support the video tag.
 </div>
 </div>
 <div class="paragraph">
-<p>A razão das diferenças entre cada imagem é que os centros são iniciados aleatoriamente, e, com apenas uma passada do <code>kmeans</code>, não possível visualizar os centros convergindo para seus valores finais, de maneira que as imagens ainda se mantém muito díspares.</p>
+<p>A razão das diferenças entre cada imagem é que os centros são iniciados aleatoriamente, e, com apenas uma passada do <code>kmeans</code>, não é possível visualizar os centros convergindo para seus valores finais, de maneira que as imagens ainda se mantém muito diferentes.</p>
 </div>
 </div>
 </div>
@@ -2523,7 +2542,7 @@ Your browser does not support the video tag.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-10-23 13:26:55 -03
+Last updated 2019-10-24 22:42:10 -03
 </div>
 </div>
 <script type="text/x-mathjax-config">
