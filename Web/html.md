@@ -19,17 +19,16 @@
 
 ## tags comuns
 
-https://developer.mozilla.org/en-US/docs/Web/HTML/Element
-
 ###  span vs. p
 
-- p contém longos blocos de plain-text
-- span contém trechos curtos de texto, separando tais trechos do resto do parágrafo. ideal usar quando o texto está inline, ou seja, dentro do parágrafo
+- `p` contém longos blocos de plain-text
+- `span` contém trechos curtos de texto, separando tais trechos do resto do parágrafo. Ideal usar quando o texto está `inline`, ou seja, dentro do parágrafo
 
 ###  strong e em
 
-- strong => negrito
-- em => itálico
+- enfatizam o texto. No estilo padrão de HTML,
+  - `strong` => negrito
+  - `em` => itálico
 
 ###  br
 
@@ -37,17 +36,17 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 
 ###  ul e ol
 
-- ul é pra listas sem ordenação
-- ol é pra listas com ordenação
+- `ul` é pra listas sem ordenação
+- `ol` é pra listas com ordenação
 
 ###  img
 
 ```html
 <img src="img-path.jpg" alt="legenda quando imagem não carrega"/>
 ```
-- alt é lido por mecanismos de leitura para pessoas cegas
-- auxiliar motores de buscas a pescarem o site
-- o texto é renderizado pelo navegador quando a imagem não é carregada corretamente
+- `alt` é lido por mecanismos de leitura por voz
+  - auxilia motores de buscas a pescarem o site
+  - o texto é renderizado pelo navegador como o texto `alt` quando a imagem não é carregada corretamente
 
 ###  video
 ```html
@@ -108,13 +107,13 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 </table>
 ```
 
-- tbody, thead e tfooter são usados pra particionar tabelas com grandes volumes de dados
-  - thead é onde se coloca o cabeçalho (th com escopo de coluna)
-  - tbody é onde se coloca os dados (td, th com escopo de linha)
-  - tfoot é pra última linha da tabela
-- tr significa linha da tabela e é usada em todo lugar
-- **scope** é usado pra determinar se a tag th está tem papel de coluna ou de linha
-- rowspan="X" e colspan="Y" fazem com que o elemento se extendam por X linhas e Y colunas, respectivamente 
+- `tbody`, `thead` e `tfooter` são usados pra particionar tabelas com grandes volumes de dados
+  - `thead` é onde se coloca o cabeçalho (`th` com escopo de coluna)
+  - `tbody` é onde se coloca os dados (`td`, `th` com escopo de linha)
+  - `tfoot` é pra última linha da tabela
+- `tr` significa linha da tabela e é usada em todo lugar
+- `scope` é usado pra determinar se a tag `th` está tem papel de coluna ou de linha
+- `rowspan="X"` e `colspan="Y"` fazem com que o elemento se extenda por X linhas e Y colunas, respectivamente 
 
 ## form
 
@@ -127,10 +126,10 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 </form>
 ```
 
-- action eh pra onde os dados são enviados
-- method descreve o método HTTP associado ao request produzido pelo form
-- quando o form é submetido, a informação `text-field = valor` é enviado para a página definida por action
-- se o user clicar em label, o input relacionado é iluminado
+- `action` é pra onde os dados são enviados
+- `method` descreve o método HTTP associado ao request produzido pelo form
+- quando o `form` é submetido, a informação `text-field = valor` é enviado para a página definida por `action`
+- se o user clicar em `label`, o `input` relacionado é iluminado
 
 ### inputs comuns
 
@@ -174,7 +173,7 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 </form>
 ```
 
-- usar o mesmo name nos checkbox agrupam eles em uma série de checkboxes
+- usar o mesmo name nos `checkbox`es os agrupam
 
 #### radio
 
@@ -190,7 +189,7 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 ```
 
 - permitem somente uma opção
-- assim como com checkboxes, mesmo name agrupa em uma só estrutura
+- assim como com `checkbox`es, mesmo `name` agrupa em uma só estrutura
 
 #### dropdown
 
@@ -229,7 +228,7 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 
 - permite o usuário digitar texto e selecionar algum possível match
 - caso não exista match, o que o usuário digita é enviado no submit
-- no submit, o que é enviado é `city = Tokyo`, caso o user digite Tokyo no input e/ou selecione a opção que aparece
+- no submit, o que é enviado é `city = Tokyo`, caso o user digite Tokyo no `input` e/ou selecione a opção que aparece
 
 #### textarea
 
@@ -245,7 +244,7 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 ```
 
 - para textos grandes
-- rows e cols controlam o número de linhas e colunas
+- `rows` e `cols` controlam o número de linhas e colunas
 
 #### submissão
 
@@ -261,7 +260,7 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 
 #### observações
 
-- placeholder aparece como diga na tag e some quando o usuário clica
+- `placeholder` aparece como diga na tag e some quando o usuário clica
 
 #### validação
 
@@ -282,7 +281,7 @@ https://developer.mozilla.org/en-US/docs/Web/HTML/Element
   <input type="text" minLength="5" maxLength="250">
   ```
 
-- regex
+- `regex`
 
   ```html
   <input ... pattern="[a-zA-Z0-9]+"
